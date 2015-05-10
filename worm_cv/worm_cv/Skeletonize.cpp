@@ -204,7 +204,7 @@ void Skeletonize::Connecting_End(){
 //创建骨架图，并对该图进行处理（Graph_Pruning）
 void Skeletonize::Convert_To_Graph(const Candidate_Points * candidate_points, Graph * skeleton_graph){
 #ifndef __SKIP_DEBUG_INFO
-	js_out.open("d:\\jstemp\\json"+num2str(worm_data.pic_num)+".js");
+	js_out.open("..\\..\\cache_data\\json\\json"+num2str(worm_data.pic_num)+".js");
 	js_out<<"worm_json=["<<js_act<<"init"<<js_para<<candidate_points->getPointStr()<<js_end;
 #endif
 	this -> owner_mark.reset();

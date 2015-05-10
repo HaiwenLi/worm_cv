@@ -62,7 +62,7 @@ public:
 		delete[] laplacian_matrix;
 	}
 
-	void Save2File(std::string dir_str, std::string pic_num) const;
+	void Save2File(std::string dist_cache_dir, std::string lap_cache_dir, std::string pic_num) const;
 	double Get_Dist(double x, double y) const;
 	void Detect_Points(const cv::Mat & binary_image, Candidate_Points & candidate_points, double width_max = WORM::INF);
 };

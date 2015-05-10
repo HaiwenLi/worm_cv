@@ -120,8 +120,7 @@ int Graph::Rotate_To_Next(int base_node, double direction) const{
 	return node[base_node].adjacent[adjacent_select.Get_Min_Index()];
 }
 //对得到的骨架图进行处理
-void Graph::Edge_Search(){
-	Graph & graph_after_prune = worm_data.graph;
+void Graph::Edge_Search(Graph & pruned_graph){
 	static int new_index[WORM::IMAGE_SIZE];
 	for (int i = 0; i < node_num; i++)
 		new_index[i] = -1;
@@ -137,10 +136,10 @@ void Graph::Edge_Search(){
 	int next_node;
 	int stack[SKELETONIZE::STORAGE_MAX][2], top = 0;
 	// 初始化过程
-	graph_after_prune.Reset();
-	graph_after_prune.Add_Node(node[last_node].center, -1);
+	pruned_graph.Reset();
+	pruned_graph.Add_Node(node[last_node].center, -1);
 	new_index[last_node] = 0;
-	graph_after_prune.Add_Node(node[current_node].center, 0);
+	pruned_graph.Add_Node(node[current_node].center, 0);
 	new_index[current_node] = 1;
 	if (node[last_node].degree >= 2){
 		++ top;
@@ -176,17 +175,17 @@ void Graph::Edge_Search(){
 				throw new Simple_Exception("Edge Search:Stack Overflow!");
 			++ top;
 		}
-		// 若下一点没有被遍历过，则将其加入graph_after_prune
+		// 若下一点没有被遍历过，则将其加入pruned_graph
 		int new_index_1 = new_index[current_node], new_index_2 = new_index[next_node];
 		if (new_index_2 == -1){
-			graph_after_prune.Add_Node(node[next_node].center, new_index_1);
-			new_index[next_node] = graph_after_prune.node_num - 1;
+			pruned_graph.Add_Node(node[next_node].center, new_index_1);
+			new_index[next_node] = pruned_graph.node_num - 1;
 			last_node = current_node;
 			current_node = next_node;
 		}
 		else{
-			if (graph_after_prune.node[new_index_1].Adjacent_Index_Locate(new_index_2) == -1)
-				graph_after_prune.Connect_Node(new_index_1, new_index_2);
+			if (pruned_graph.node[new_index_1].Adjacent_Index_Locate(new_index_2) == -1)
+				pruned_graph.Connect_Node(new_index_1, new_index_2);
 			// 搜索栈中首个比next_node更早遍历到的分支点，并且回溯到该分支点，若栈中无这样的点则结束
 			while (true){
 				if (-- top < 0)
@@ -199,7 +198,7 @@ void Graph::Edge_Search(){
 			}
 		}
 	}
-	if (worm_data.graph.node_num < node_num * SKELETONIZE::PRUNE_MINIMUM_PROPORTION)
+	if (pruned_graph.node_num < node_num * SKELETONIZE::PRUNE_MINIMUM_PROPORTION)
 		throw new Simple_Exception("Skeletonize:Prune Minimum Proportion Too Small!");
 }
 

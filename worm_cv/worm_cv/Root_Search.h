@@ -59,6 +59,6 @@ private:
 	// 从中心线序列（centerline_candidates）中选择合适的路径作为线虫的中心线
 	void Root_Select();
 public:
-	Root_Search();
+	Root_Search(Graph & graph);
 	void Search_Backbone();
 };

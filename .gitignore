@@ -5,6 +5,6 @@
 /worm_pic/14*
 /worm_pic/1500.tiff
 
-!worm_cv/worm_cv/*.h
-!worm_cv/worm_cv/*.cpp
-!worm_cv/worm_cv.sln
+!/worm_cv/worm_cv/*.h
+!/worm_cv/worm_cv/*.cpp
+!/worm_cv/worm_cv.sln

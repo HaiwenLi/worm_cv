@@ -8,7 +8,6 @@ class Candidate_Points_Detect;
 
 struct Worm_Data{
 	Centerline backbone;// 存储计算得到中心线，包含101个等分点的坐标
-	Graph graph;
 
 	int pic_num;
 	std::string file_tag;

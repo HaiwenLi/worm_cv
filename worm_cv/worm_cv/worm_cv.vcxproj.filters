@@ -42,9 +42,6 @@
     <ClInclude Include="Skeletonize.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Graph_Prune.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Candidate_Points.h">
       <Filter>头文件</Filter>
     </ClInclude>

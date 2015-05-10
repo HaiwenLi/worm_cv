@@ -223,7 +223,7 @@ void Root_Search::Root_Select(){
 	}
 }
 // Root_Search:public
-Root_Search::Root_Search():max_length(0), root_num(0), graph(worm_data.graph){
+Root_Search::Root_Search(Graph & graph):max_length(0), root_num(0), graph(graph){
 	for (int i = 0; i < SKELETONIZE::STORAGE_MAX; i++)
 		centerline_candidates[i] = NULL;
 }

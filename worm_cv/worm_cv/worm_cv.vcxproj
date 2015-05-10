@@ -93,7 +93,6 @@
     <ClInclude Include="Candidate_Points.h" />
     <ClInclude Include="Centerline.h" />
     <ClInclude Include="CONST_PARA.h" />
-    <ClInclude Include="Graph_Prune.h" />
     <ClInclude Include="Root_Search.h" />
     <ClInclude Include="Root_Smooth.h" />
     <ClInclude Include="Skeletonize.h" />

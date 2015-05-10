@@ -136,9 +136,9 @@ void Candidate_Points_Detect::Denoise_And_Worm_Locate(){
 }
 //public:
 
-void Candidate_Points_Detect::Save2File(string dir_str, string pic_num) const{
-	Save_Mat_To_File<float>(distance_matrix, dir_str + "dist_mat\\" + pic_num);
-	ofstream file((dir_str + "lap_mat\\" + pic_num).c_str(), ios::binary);
+void Candidate_Points_Detect::Save2File(string dist_cache_dir, string lap_cache_dir, string pic_num) const{
+	Save_Mat_To_File<float>(distance_matrix, dist_cache_dir + pic_num);
+	ofstream file((lap_cache_dir + pic_num).c_str(), ios::binary);
 	for (int i = 0;i < distance_matrix.rows;++ i)
 		file.write((char *)laplacian_matrix[i], distance_matrix.cols * sizeof(double));
 	file.close();
