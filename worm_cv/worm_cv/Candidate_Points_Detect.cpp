@@ -170,7 +170,7 @@ void Candidate_Points_Detect::Detect_Points(const Mat & image, Candidate_Points 
 #endif
 	//Save_Mat_To_File<uchar>(image, cache_dir+"binary_denoised\\"+pic_num_str);
 	distanceTransform(binary_image, distance_matrix, CV_DIST_L2, CV_DIST_MASK_PRECISE);
-	Distance_Retrace();
+	Distance_Retrace(width_max);
 	Calc_LapMat_Of_Inner_Part();
 	Catch_Candidate_By_LapMat(candidate_Points);
 }

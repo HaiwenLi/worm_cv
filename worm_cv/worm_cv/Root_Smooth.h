@@ -10,5 +10,5 @@ private:
 	void Interpolate();
 	void Equal_Divide(int partition_num);
 public:
-	void Interpolate_And_Equal_Divide(Curve & centerline_to_smooth, int partition_num);
+	void Interpolate_And_Equal_Divide(Centerline & centerline_to_smooth, int partition_num);
 };

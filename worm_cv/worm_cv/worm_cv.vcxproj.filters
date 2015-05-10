@@ -53,9 +53,6 @@
     <ClCompile Include="Centerline.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Denoise_And_Worm_Locate.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Root_Search.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

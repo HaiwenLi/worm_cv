@@ -98,10 +98,10 @@ void Root_Search::Match_Correct_Head(){
 		*/
 		length = centerline_candidates[i] -> length;//该条中心线的长度
 
-		head[0] = centerline_candidates[i] -> cood[0][0] + worm_data.Worm_XY_Range[2];
-		head[1] = centerline_candidates[i] -> cood[0][1] + worm_data.Worm_XY_Range[0];
-		tail[0] = centerline_candidates[i] -> cood[length-1][0] + worm_data.Worm_XY_Range[2];
-		tail[1] = centerline_candidates[i] -> cood[length-1][1] + worm_data.Worm_XY_Range[0];
+		head[0] = centerline_candidates[i] -> cood[0][0] ;
+		head[1] = centerline_candidates[i] -> cood[0][1];
+		tail[0] = centerline_candidates[i] -> cood[length-1][0];
+		tail[1] = centerline_candidates[i] -> cood[length-1][1];
 
 		double dist = Point_Dist_Square(head, worm_data.backbone.cood[0]) + 
 			Point_Dist_Square(tail, worm_data.backbone.cood[ROOT_SMOOTH::PARTITION_NUM ]);
