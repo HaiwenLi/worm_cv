@@ -11,4 +11,5 @@ for i = 1:graph.num
     plot(uniform(i,2),uniform(i,1), 'b.', 'markersize', 5),hold on;
     end
 end
+axis equal;
 end
