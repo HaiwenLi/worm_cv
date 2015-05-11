@@ -1,7 +1,8 @@
-1. package Search_Backbone into a class
+package Search_Backbone into a class
 	providing public method to resolve raw image flows into centerlines
 
-2. decoupling Skeletonize and Candidate_Points/Graph
+
+decoupling Skeletonize and Candidate_Points/Graph
 	move used-point-check
 		thus remove the ugly State_Machine Owner_Marker, simply use array
 		if Query_Points_By_Pointer find a used point, connect it to current and stop
@@ -10,8 +11,13 @@
 
 
 
+add deserialization
 
-3. use graph analyze to help find correct root(replace current Prune Method and Root_Search):
+
+wrap json interface(jsoncpp?)
+
+
+use graph analyze to help find correct root(replace current Prune Method and Root_Search):
 	
 	new method should generate a new graph:
 		use array to mark the deleted vertex:		
@@ -45,7 +51,8 @@
 		if bifurcate branch deleted:
 			delete the two corresponding element if degree==2
 
-4. add cross-check into Skeletonize
+
+add cross-check into Skeletonize
 	use center-point and hash-list to accelerate	(segment tree?)
 	sort in-time | maintain a stack
 	use cross-product to judge cross-status:
