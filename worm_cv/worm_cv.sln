@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "worm_cv", "worm_cv\worm_cv.vcxproj", "{F16CE736-2FB2-4E80-9A24-D634C4AAC55D}"
 EndProject
 Global
@@ -11,8 +13,8 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F16CE736-2FB2-4E80-9A24-D634C4AAC55D}.Debug|Win32.ActiveCfg = Debug|Win32
 		{F16CE736-2FB2-4E80-9A24-D634C4AAC55D}.Debug|Win32.Build.0 = Debug|Win32
-		{F16CE736-2FB2-4E80-9A24-D634C4AAC55D}.Release|Win32.ActiveCfg = Release|Win32
-		{F16CE736-2FB2-4E80-9A24-D634C4AAC55D}.Release|Win32.Build.0 = Release|Win32
+		{F16CE736-2FB2-4E80-9A24-D634C4AAC55D}.Release|Win32.ActiveCfg = Debug|Win32
+		{F16CE736-2FB2-4E80-9A24-D634C4AAC55D}.Release|Win32.Build.0 = Debug|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
