@@ -53,7 +53,7 @@ private:
 	inline bool Lap_Value_Small_Enough(int i, int j) const;
 	void Catch_Candidate_By_LapMat(Candidate_Points &candidate_Points);
 	void Contour_Range_Get(std::vector<cv::Point> worm_contour, int * Range);
-	void Denoise_And_Worm_Locate();
+	void Denoise_And_Worm_Locate(double area);
 public:
 	Candidate_Points_Detect(){
 		laplacian_matrix = new double[WORM::IMAGE_SIZE][WORM::IMAGE_SIZE];
@@ -64,6 +64,6 @@ public:
 
 	void Save2File(std::string dist_cache_dir, std::string lap_cache_dir, std::string pic_num) const;
 	double Get_Dist(double x, double y) const;
-	void Detect_Points(const cv::Mat & binary_image, Candidate_Points & candidate_points, double width_max = WORM::INF);
+	void Detect_Points(const cv::Mat & binary_image, Candidate_Points & candidate_points, double width = WORM::INF, double area = WORM::INF);
 };
 

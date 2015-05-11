@@ -86,7 +86,7 @@ void Candidate_Points_Detect::Contour_Range_Get(vector<Point> worm_contour, int 
 	Range[3] = min(right + BW::SIDE_WIDTH, WORM::IMAGE_SIZE);
 }
 
-void Candidate_Points_Detect::Denoise_And_Worm_Locate(){
+void Candidate_Points_Detect::Denoise_And_Worm_Locate(double area){
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
 
@@ -94,7 +94,7 @@ void Candidate_Points_Detect::Denoise_And_Worm_Locate(){
 
 	Select_Minimum select_contours_by_area(WORM::INF, -1);
 	for (unsigned i = 0; i < contours.size(); ++i)
-		select_contours_by_area.Renew(-contourArea(contours[i]), i);
+		select_contours_by_area.Renew(abs(area-contourArea(contours[i])), i);
 	int contour_select = select_contours_by_area.Get_Min_Index();
 	if (contour_select == -1)
 		throw new Simple_Exception("Can't get connected components of the worm");
@@ -159,18 +159,18 @@ double Candidate_Points_Detect::Get_Dist(double x, double y) const{
 		distance_matrix.at<float>(x+1, y+1) * alpha * beta);
 }
 
-void Candidate_Points_Detect::Detect_Points(const Mat & image, Candidate_Points & candidate_Points, double width_max){
+void Candidate_Points_Detect::Detect_Points(const Mat & image, Candidate_Points & candidate_Points, double width, double area){
 	binary_image = image < BW::BINARY_THRESHOLD;
 #ifndef __SKIP_DEBUG_INFO
 	cv::imwrite("..\\..\\1001.tiff",binary_image);
 #endif
-	Denoise_And_Worm_Locate();
+	Denoise_And_Worm_Locate(area);
 #ifndef __SKIP_DEBUG_INFO
 	cout<<"Denoise Complete!"<<endl;
 #endif
 	//Save_Mat_To_File<uchar>(image, cache_dir+"binary_denoised\\"+pic_num_str);
 	distanceTransform(binary_image, distance_matrix, CV_DIST_L2, CV_DIST_MASK_PRECISE);
-	Distance_Retrace(width_max);
+	Distance_Retrace(width);
 	Calc_LapMat_Of_Inner_Part();
 	Catch_Candidate_By_LapMat(candidate_Points);
 }
