@@ -2,7 +2,7 @@
 
 #include "CONST_PARA.h"
 
-struct Centerline{
+struct Centerline:public Cache_Savable{
 	int length;
 	int size;
 	double (* cood)[2];
@@ -14,7 +14,7 @@ struct Centerline{
 	}
 	Centerline(const Centerline & root);
 	Centerline & operator=(const Centerline & root);
-	~Centerline(){
+	~Centerline() override{
 		delete[] cood;
 	}
 	bool Have_Same_Endpoints(const Centerline & root_to_match) const{
@@ -37,6 +37,6 @@ struct Centerline{
 	void Reverse();//中心线反转
 	void Tail_Cut(double full_width);//去除中心线尾部点
 	ROOT_SEARCH::Clockwise_Direct Clockwise_Direct_Calc(int start_index, int tail_index);//计算时针方向
-	void Save2File(std::string file_name);
+	void Save2File(std::string file_name) override;
 };
 
