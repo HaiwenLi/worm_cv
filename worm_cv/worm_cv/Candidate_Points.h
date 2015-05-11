@@ -6,7 +6,7 @@
 class Owner_Mark;
 
 // Candidate_Center_Points结构体表示中心线候选点
-class Candidate_Points:public Cache_Savable{
+class Candidate_Points{
 private:
 	int point_num; // 中心点的个数
 	int cood[SKELETONIZE::POINT_NUM_MAX][2];//候选点坐标
@@ -36,7 +36,7 @@ public:
 	Multi_Points Query_Points_By_Pointer(const double * base_point, const double * direct_vec, const Owner_Mark & point_info) const;
 	void Add_Line();
 	void Add_Point_To_Line(int y);
-	void Save2File(std::string file_name) override;
+	void Save2File(std::string file_name);
 	std::string getPointStr(const Multi_Points & points) const;
 	std::string getPointStr() const;
 };

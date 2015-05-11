@@ -21,44 +21,39 @@ void Search_Backbone::Data_Processing() {
 	delete[] worm_width;
 }
 
-void Search_Backbone::Data_Save(){
-	static string cache_dir_str[FINISH] = { "", "candidate_points\\", "graph_unpruned\\", "graph_pruned\\", "backbone_unsmoothed\\", "backbone_smoothed\\"};
-	static Cache_Savable * stage_cache[FINISH] = {&candidate_center_points, &candidate_center_points, &skeleton_graph, &pruned_graph, &backbone, &backbone };
+const Centerline* Search_Backbone::Search(const cv::Mat& image){
 	auto pic_num_str = num2str(pic_num);
-#ifdef __OUTPUT_DEBUG_INFO
-	for (int i = CANDIDATE; i < current_stage; ++i){
-		stage_cache[i]->Save2File(cache_dir + cache_dir_str[i] + pic_num_str);
-	}
-#endif
-}
 
-void Search_Backbone::Next_Stage(){
-	static string stage_words[FINISH] = { "Candidates Detect Complete!", "Skeletonize Complete!", "Graph Prune Complete!", 
-		"Backbone Search Complete!", "Smooth Complete!", "All Finished!\n"};
-#ifdef __OUTPUT_STAGE_INFO
-	cout << stage_words[current_stage] << endl;
-#endif
-	current_stage = Stage((current_stage+1) % FINISH);
-}
-
-
-const Centerline *Search_Backbone::Search(const Mat & image){
-	string pic_num_str = num2str(pic_num);
+	candidate_center_points.Reset();
 	skeleton_graph.Reset();
 	pruned_graph.Reset();
-	candidate_center_points.Reset();
+
 	candidate_points_detect.Detect_Points(image, candidate_center_points, worm_full_width, worm_area);
-	Next_Stage();
-	skeletonize.Convert_To_Graph(& candidate_center_points, & skeleton_graph, pic_num_str);
-	Next_Stage(); 
+#ifndef __SKIP_DEBUG_INFO
+	cout << "Candidates Detect Complete!" << endl;
+	candidate_points_detect.Save2File(cache_dir + "dist_mat\\", cache_dir + "lap_mat\\", pic_num_str);
+	candidate_center_points.Save2File(cache_dir + "candidate_points\\" + pic_num_str);
+#endif
+	skeletonize.Convert_To_Graph(&candidate_center_points, &skeleton_graph, pic_num_str);
+#ifndef __SKIP_DEBUG_INFO
+	cout << "Skeletonize Complete!" << endl;
+	skeleton_graph.Save2File(cache_dir + "graph_unpruned\\" + pic_num_str);
+#endif 
 	skeleton_graph.Edge_Search(pruned_graph);
-	Next_Stage();
+#ifndef __SKIP_DEBUG_INFO
+	cout << "Graph Prune Complete!" << endl;
+	pruned_graph.Save2File(cache_dir + "graph_pruned\\" + pic_num_str);
+#endif
 	Root_Search(pruned_graph).Search_Backbone(backbone, clockwise_whole, clockwise_head, clockwise_tail, worm_full_width, first_pic);
-	Next_Stage();
-	root_smooth.Interpolate_And_Equal_Divide(backbone, ROOT_SMOOTH::PARTITION_NUM);
-	Next_Stage();
+#ifndef __SKIP_DEBUG_INFO
+	cout << "Backbone Search Complete!" << endl;
+	backbone.Save2File(cache_dir + "backbone_unsmoothed\\" + pic_num_str);
+#endif
+	Root_Smooth().Interpolate_And_Equal_Divide(backbone, ROOT_SMOOTH::PARTITION_NUM);
+#ifndef __SKIP_DEBUG_INFO
+	cout << "Smooth Complete!" << endl;
+	backbone.Save2File(cache_dir + "backbone_smoothed\\" + pic_num_str);
+#endif
 	Data_Processing();
-	Data_Save();
-	Next_Stage();
 	return &backbone;
-}
+	}
