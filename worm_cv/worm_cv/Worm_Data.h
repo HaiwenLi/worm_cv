@@ -11,7 +11,7 @@ struct Worm_Data{
 
 	int pic_num;
 	std::string file_tag;
-	int worm_area;//线虫面积
+	double worm_area;//线虫面积
 	int worm_area_size[2];
 	bool adhesion;//线虫是否粘连
 	double worm_width[ROOT_SMOOTH::PARTITION_NUM + 1];//线虫身体宽度
@@ -19,8 +19,8 @@ struct Worm_Data{
 	ROOT_SEARCH::Clockwise_Direct clockwise_head, clockwise_tail, clockwise_whole;
 	bool is_first_pic;
 
-	Worm_Data():backbone(ROOT_SMOOTH::PARTITION_NUM + 1), is_first_pic(true),
-		adhesion(false), worm_full_width(WORM::INF), worm_area(50000){
+	Worm_Data():backbone(ROOT_SMOOTH::PARTITION_NUM + 1), worm_area(WORM::INF),
+		adhesion(false), worm_full_width(WORM::INF), is_first_pic(true){
 			backbone.length = backbone.size;
 	};
 	void Data_Processing(const Candidate_Points_Detect & detect);

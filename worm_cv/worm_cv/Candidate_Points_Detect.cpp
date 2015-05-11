@@ -12,7 +12,7 @@ void Candidate_Points_Detect::Distance_Retrace(double width_max){
 		float * dist_row = distance_matrix.ptr<float>(i);
 		for (int j = 0; j < distance_matrix.cols; ++j)
 			if (dist_row[j] > BW::RAP_THRESHOLD * width_max)
-				dist_row[j] = fmod(width_max - (double)dist_row[j], width_max) * BW::RAP_SLOPE;
+				dist_row[j] = fmod(width_max - static_cast<double>(dist_row[j]), width_max) * BW::RAP_SLOPE;
 	}
 }
 
@@ -96,10 +96,11 @@ void Candidate_Points_Detect::Denoise_And_Worm_Locate(double area){
 	for (unsigned i = 0; i < contours.size(); ++i)
 		select_contours_by_area.Renew(abs(area-contourArea(contours[i])), i);
 	int contour_select = select_contours_by_area.Get_Min_Index();
+	this -> area = contourArea(contours[contour_select]);
 	if (contour_select == -1)
 		throw new Simple_Exception("Can't get connected components of the worm");
+
 	Contour_Range_Get(contours[contour_select], Worm_XY_Range);
-	double minimum_whole_area = contourArea(contours[contour_select]) * BW::MINIMUM_WHOLE_PROPORTION;
 	// Retain a contour whose area is closest to area
 	for (int i = 0; i >= 0; i = hierarchy[i][0])
 		drawContours(binary_image, contours, i, 255 * (i == contour_select), CV_FILLED, 8, hierarchy);
@@ -117,8 +118,11 @@ void Candidate_Points_Detect::Denoise_And_Worm_Locate(double area){
 	findContours(binary_image, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
 	//填充线虫区域内部的空白杂点
 	for (int i = 0; i >= 0; i = hierarchy[i][0]){
-		bool retain_whole = contourArea(contours[i]) > minimum_whole_area;
-		drawContours(binary_image, contours, i, 255 * retain_whole, CV_FILLED, 8, hierarchy);
+		double hole_area = contourArea(contours[i]);
+		bool retain_hole = hole_area > this->area * BW::MINIMUM_HOLE_PROPORTION;
+		if (!retain_hole)
+			this->area += hole_area;
+		drawContours(binary_image, contours, i, 255 * retain_hole, CV_FILLED, 8, hierarchy);
 	}
 	binary_image = ~binary_image;
 	//修补图像边缘
@@ -140,7 +144,7 @@ void Candidate_Points_Detect::Save2File(string dist_cache_dir, string lap_cache_
 	Save_Mat_To_File<float>(distance_matrix, dist_cache_dir + pic_num);
 	ofstream file((lap_cache_dir + pic_num).c_str(), ios::binary);
 	for (int i = 0;i < distance_matrix.rows;++ i)
-		file.write((char *)laplacian_matrix[i], distance_matrix.cols * sizeof(double));
+		file.write(reinterpret_cast<char *>(laplacian_matrix[i]), distance_matrix.cols * sizeof(double));
 	file.close();
 }
 

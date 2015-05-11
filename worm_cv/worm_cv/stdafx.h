@@ -82,6 +82,9 @@ public:
 	int Get_Min_Index() const{
 		return min_Index;
 	}
+	double Get_Min_Val() const{
+		return min_Val;
+	}
 };
 
 template<typename T>

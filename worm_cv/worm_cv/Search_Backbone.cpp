@@ -18,7 +18,7 @@ Centerline *Search_Backbone(Mat image, string pic_num_str = "New Pic"){
 	pruned_graph.Reset();
 	candidate_center_points.Reset();
 
-	candidate_points_detect.Detect_Points(image, candidate_center_points, worm_data.worm_full_width);
+	candidate_points_detect.Detect_Points(image, candidate_center_points, worm_data.worm_full_width, worm_data.worm_area);
 	Time_Calc();
 #ifndef __SKIP_DEBUG_INFO
 	cout<<"Candidates Detect Complete!"<<endl;
@@ -46,5 +46,6 @@ Centerline *Search_Backbone(Mat image, string pic_num_str = "New Pic"){
 	worm_data.backbone.Save2File(cache_dir + "backbone_smoothed\\"+pic_num_str);
 #endif
 	worm_data.Data_Processing(candidate_points_detect);
+	cout << worm_data.worm_area;
 	return &worm_data.backbone;
 }

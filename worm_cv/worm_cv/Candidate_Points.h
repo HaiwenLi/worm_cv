@@ -46,6 +46,7 @@ private:
 	cv::Mat distance_matrix;
 	double (* laplacian_matrix)[WORM::IMAGE_SIZE];
 	int Worm_XY_Range[4];
+	double area;
 	static const double HALF_THRES;
 
 	void Distance_Retrace(double width_max);
@@ -64,6 +65,9 @@ public:
 
 	void Save2File(std::string dist_cache_dir, std::string lap_cache_dir, std::string pic_num) const;
 	double Get_Dist(double x, double y) const;
+	double Get_Area() const{
+		return area;
+	};
 	void Detect_Points(const cv::Mat & binary_image, Candidate_Points & candidate_points, double width = WORM::INF, double area = WORM::INF);
 };
 
