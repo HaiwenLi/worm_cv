@@ -40,9 +40,9 @@ void Centerline::Reverse(){
 	adhesion_index = length - 1 - adhesion_index;
 }
 // 对于尾部与身体粘连的中心线，去除其尾部点以保证尾部末端到身体的距离大于虫体宽度的一定倍数
-void Centerline::Tail_Cut(){
+void Centerline::Tail_Cut(double full_width){
 	if (circle != TAIL) return;
-	double minimum_dist_square = worm_data.worm_full_width * worm_data.worm_full_width / 10;
+	double minimum_dist_square = full_width * full_width / 10;
 	while (Point_Dist_Square(cood[length - 1], cood[adhesion_index]) <= minimum_dist_square)
 		-- length;
 }
@@ -82,7 +82,7 @@ Clockwise_Direct Centerline::Clockwise_Direct_Calc(int head_index, int tail_inde
 
 void Centerline::Save2File(std::string file_name){
 	ofstream file(file_name.c_str(), ios::binary);
-	file.write((char *)&length, sizeof(int));
-	file.write((char *)cood, 2 * length * sizeof(double));
+	file.write(reinterpret_cast<char *>(&length), sizeof(int));
+	file.write(reinterpret_cast<char *>(cood), 2 * length * sizeof(double));
 	file.close();
 }

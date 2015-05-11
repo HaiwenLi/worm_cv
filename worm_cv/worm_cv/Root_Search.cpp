@@ -53,7 +53,7 @@ void Root_Search::Delete_Root(int n){
 	delete centerline_candidates[n];
 	-- root_num;
 	centerline_candidates[n] = centerline_candidates[root_num];
-	centerline_candidates[root_num] = NULL;
+	centerline_candidates[root_num] = nullptr;
 }
 /*
 	Short_Root_Filter
@@ -78,13 +78,11 @@ void Root_Search::Short_Root_Filter(bool circle_mode){
 	参数说明：无
 	返回值：无
 */
-void Root_Search::Match_Correct_Head(){
+void Root_Search::Match_Correct_Head(const Centerline & last_backbone, Clockwise_Direct clockwise_whole) {
 	//const double * head_node, * tail_node;
 	static double head[2];//记录中心线头部区域点
 	static double tail[2];//记录中心线尾部区域点
 	int length;
-	if (worm_data.is_first_pic)
-		return;
 	for (int i = 0; i < root_num; i++){
 		//使用距离的方法判断线虫头尾时可考虑头部和尾部区域的所有点
 		/*
@@ -103,11 +101,11 @@ void Root_Search::Match_Correct_Head(){
 		tail[0] = centerline_candidates[i] -> cood[length-1][0];
 		tail[1] = centerline_candidates[i] -> cood[length-1][1];
 
-		double dist = Point_Dist_Square(head, worm_data.backbone.cood[0]) + 
-			Point_Dist_Square(tail, worm_data.backbone.cood[ROOT_SMOOTH::PARTITION_NUM ]);
+		double dist = Point_Dist_Square(head, last_backbone.cood[0]) +
+			Point_Dist_Square(tail, last_backbone.cood[ROOT_SMOOTH::PARTITION_NUM]);
 
-		double dist_inv = Point_Dist_Square(head, worm_data.backbone.cood[ROOT_SMOOTH::PARTITION_NUM]) + 
-			Point_Dist_Square(tail, worm_data.backbone.cood[0]);
+		double dist_inv = Point_Dist_Square(head, last_backbone.cood[ROOT_SMOOTH::PARTITION_NUM]) +
+			Point_Dist_Square(tail, last_backbone.cood[0]);
 		// 判断是否需要头尾反向
 		if (dist_inv - dist > ROOT_SEARCH::HEAD_CHOOSE_DIST_MIN)
 			continue;
@@ -116,9 +114,9 @@ void Root_Search::Match_Correct_Head(){
 			continue;
 		}
 		//计算时针方向（与上一帧对比）
-		if (centerline_candidates[i] -> Clockwise_Direct_Calc(0, centerline_candidates[i] -> length - 1) == worm_data.clockwise_whole)
+		if (centerline_candidates[i] -> Clockwise_Direct_Calc(0, centerline_candidates[i] -> length - 1) == clockwise_whole)
 			continue;
-		if (centerline_candidates[i] -> Clockwise_Direct_Calc(0, centerline_candidates[i] -> length - 1) + worm_data.clockwise_whole == 3){
+		if (centerline_candidates[i] -> Clockwise_Direct_Calc(0, centerline_candidates[i] -> length - 1) + clockwise_whole == 3){
 			centerline_candidates[i] -> Reverse();
 			continue;
 		}
@@ -132,7 +130,7 @@ void Root_Search::Match_Correct_Head(){
 	new_root_in_graph：Root_In_Graph类型的引用，表示路径
 	返回值：无
 */
-void Root_Search::Root_Add(const Root_In_Graph & new_root_in_graph){
+void Root_Search::Root_Add(const Root_In_Graph & new_root_in_graph, double worm_full_width){
 	// 若栈满则报错
 	if (root_num >= SKELETONIZE::STORAGE_MAX)
 		throw new Simple_Exception("Root_Search:Root Num Exceed Error!");
@@ -140,7 +138,7 @@ void Root_Search::Root_Add(const Root_In_Graph & new_root_in_graph){
 	Centerline * new_root = new Centerline(new_root_in_graph.length);
 	Obtain_Coodinate(new_root_in_graph, * new_root);
 	if (new_root -> circle == TAIL)
-		new_root -> Tail_Cut();
+		new_root->Tail_Cut(worm_full_width);
 	// circle_mode当且仅当最长路径与当前路径都为环路时才为真，这时可以保留多条较长的路径，否则只保留最长的一条
 	bool circle_mode = !longest_root_not_circle && (new_root_in_graph.circle != NONE);
 	int minimum_length = max_length;
@@ -183,7 +181,7 @@ void Root_Search::Root_Add(const Root_In_Graph & new_root_in_graph){
 	参数说明：无
 	返回值：无
 */
-void Root_Search::Root_Select(){
+void Root_Search::Root_Select(Clockwise_Direct clockwise_head, Clockwise_Direct clockwise_tail){
 	Clockwise_Direct clockwise_1, clockwise_2;
 	switch (root_num){
 	case (0):
@@ -203,7 +201,7 @@ void Root_Search::Root_Select(){
 			clockwise_2 = root_2 -> Clockwise_Direct_Calc(0, adhesion_2 - MINIMUM_HALF_CIRCLE);
 			if (clockwise_1 == clockwise_2)
 				cannot_select = true;
-			if (clockwise_2 == worm_data.clockwise_head)
+			if (clockwise_2 == clockwise_head)
 				swap(centerline_candidates[0], centerline_candidates[1]);
 		}
 		else{ //if (root_1 -> circle == TAIL)
@@ -211,7 +209,7 @@ void Root_Search::Root_Select(){
 			clockwise_2 = root_2 -> Clockwise_Direct_Calc(adhesion_2 + MINIMUM_HALF_CIRCLE, root_2 -> length - 1);
 			if (clockwise_1 == clockwise_2)
 				cannot_select = true;
-			if (clockwise_2 == worm_data.clockwise_tail)
+			if (clockwise_2 == clockwise_tail)
 				swap(centerline_candidates[0], centerline_candidates[1]);
 		}
 		if (cannot_select)
@@ -223,12 +221,13 @@ void Root_Search::Root_Select(){
 	}
 }
 // Root_Search:public
-Root_Search::Root_Search(Graph & graph):max_length(0), root_num(0), graph(graph){
+Root_Search::Root_Search(Graph & graph):graph(graph), root_num(0), max_length(0){
 	for (int i = 0; i < SKELETONIZE::STORAGE_MAX; i++)
-		centerline_candidates[i] = NULL;
+		centerline_candidates[i] = nullptr;
 }
 //从骨架图中搜索线虫中心线
-void Root_Search::Search_Backbone(){
+void Root_Search::Search_Backbone(Centerline & last_backbone, Clockwise_Direct clockwise_whole, Clockwise_Direct clockwise_head, 
+	Clockwise_Direct clockwise_tail, double worm_full_width, bool first_pic){
 	Graph_Node next_node;
 	int end_node_num, *end_node, current_index, root_stack_top = 0;
 	int * node_in_root = new int[graph.Get_Node_Num()];
@@ -270,7 +269,7 @@ void Root_Search::Search_Backbone(){
 								current_root.circle = TAIL;
 							}
 						}
-						Root_Add(current_root);
+						Root_Add(current_root, worm_full_width);
 					}
 					//读出栈顶路径
  					if (root_stack_top < 1)
@@ -300,10 +299,11 @@ void Root_Search::Search_Backbone(){
 END_OF_SEARCH:;
 	}
 	delete[] node_in_root;
-	Match_Correct_Head();
-	Root_Select();
+	if (!first_pic)
+		Match_Correct_Head(last_backbone, clockwise_whole);
+	Root_Select(clockwise_head, clockwise_tail);
 	//cout<<"Root selected, length: "<<worm_data.backbone.length<<endl;
-	worm_data.backbone = * centerline_candidates[0];
+	last_backbone = * centerline_candidates[0];
 	for (int i = 0; i < root_num; i++)
 		delete centerline_candidates[i];
 }

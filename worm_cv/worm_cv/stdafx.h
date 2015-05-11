@@ -8,16 +8,7 @@
 #include <fstream>
 #include <cmath>
 #include <string>
-#include "Candidate_Points.h"
-#include "Skeletonize.h"
-#include "Centerline.h"
-#include "Root_Search.h"
-#include "Root_Smooth.h"
-#include "Worm_Data.h"
-#include "Graph.h"
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include "Search_Backbone.h"
 
 inline bool Is_8_Neighbour(const int * point_1, const int * point_2){
 	return point_1[0] - point_2[0] < 2 && point_2[0] - point_1[0] < 2 
@@ -95,16 +86,4 @@ void Save_Mat_To_File(const cv::Mat & mat, std::string file_dir){
 		file.write((char *)ptr, mat.cols * sizeof(T));
 	}
 	file.close();
-}
-
-extern Worm_Data worm_data;
-
-const int PARTS = 12;
-extern clock_t _t[PARTS], __t;
-extern long t[PARTS], __t_;
-extern int cparts;
-inline void Time_Calc(){
-	_t[cparts + 1] = clock();
-	t[cparts] += _t[cparts+1] - _t[cparts];
-	++ cparts;
 }

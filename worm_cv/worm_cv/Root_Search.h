@@ -30,7 +30,7 @@ struct Root_In_Graph{
 	}
 	// 需要保证输入node在graph中表示合法的结点编号
 	void Add_Node(int node){
-		if (length >= size || index == NULL)
+		if (length >= size || index == nullptr)
 			throw new Simple_Exception("Root_Length Error!");
 		index[length ++] = node;
 	}
@@ -44,8 +44,6 @@ private:
 	int max_length;//最大路径长度
 	bool longest_root_not_circle;//最大路径是否存在圈
 	
-	// 搜索图中所有的端点(即度为1的点)传入end_node中，并且端点数为end_node_num
-	void Check_End(int end_node[SKELETONIZE::STORAGE_MAX], int & end_node_num) const;
 	// 获取路径root_in_graph中节点的中心坐标，并存入centerline中
 	void Obtain_Coodinate(const Root_In_Graph & root_in_graph, Centerline & centerline);
 	// 删除下标为n的路径
@@ -53,12 +51,13 @@ private:
 	// 删除短路径
 	void Short_Root_Filter(bool circle_mode);
 	// 判断线虫头尾
-	void Match_Correct_Head();
+	void Match_Correct_Head(const Centerline & last_backbone, ROOT_SEARCH::Clockwise_Direct cloockwise_full);
 	// 将new_root表示的路径加入到中心线序列
-	void Root_Add(const Root_In_Graph & new_root);
+	void Root_Add(const Root_In_Graph & new_root, double worm_full_width);
 	// 从中心线序列（centerline_candidates）中选择合适的路径作为线虫的中心线
-	void Root_Select();
+	void Root_Select(ROOT_SEARCH::Clockwise_Direct cloockwise_head, ROOT_SEARCH::Clockwise_Direct cloockwise_tail);
 public:
 	Root_Search(Graph & graph);
-	void Search_Backbone();
+	void Search_Backbone(Centerline & last_backbone, ROOT_SEARCH::Clockwise_Direct cloockwise_full, 
+		ROOT_SEARCH::Clockwise_Direct cloockwise_head, ROOT_SEARCH::Clockwise_Direct cloockwise_tail, double worm_full_width, bool first_pic = true);
 };

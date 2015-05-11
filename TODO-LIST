@@ -1,5 +1,7 @@
 package Search_Backbone into a class
 	providing public method to resolve raw image flows into centerlines
+		done
+	use enum::stage to save current status, do output when detect ends or error occurs(in the deconstructor)
 
 
 decoupling Skeletonize and Candidate_Points/Graph

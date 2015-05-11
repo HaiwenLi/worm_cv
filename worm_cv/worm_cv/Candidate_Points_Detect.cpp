@@ -165,13 +165,7 @@ double Candidate_Points_Detect::Get_Dist(double x, double y) const{
 
 void Candidate_Points_Detect::Detect_Points(const Mat & image, Candidate_Points & candidate_Points, double width, double area){
 	binary_image = image < BW::BINARY_THRESHOLD;
-#ifndef __SKIP_DEBUG_INFO
-	cv::imwrite("..\\..\\1001.tiff",binary_image);
-#endif
 	Denoise_And_Worm_Locate(area);
-#ifndef __SKIP_DEBUG_INFO
-	cout<<"Denoise Complete!"<<endl;
-#endif
 	//Save_Mat_To_File<uchar>(image, cache_dir+"binary_denoised\\"+pic_num_str);
 	distanceTransform(binary_image, distance_matrix, CV_DIST_L2, CV_DIST_MASK_PRECISE);
 	Distance_Retrace(width);

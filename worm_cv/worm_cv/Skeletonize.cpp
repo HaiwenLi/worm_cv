@@ -196,15 +196,16 @@ void Skeletonize::Connecting_End(){
 	js_out<<js_act<<"connectNode"<<js_para<<end_nodes[i]<<" "<<owner_mark.Get_Owner_Node(current_item[0])<<js_end;
 #endif
 			}
-			end_nodes[i] = current_item.size==1 ? owner_mark.Get_Owner_Node(current_item[0]) : -1;
+			if (current_item.size == 1)
+				end_nodes[i] = owner_mark.Get_Owner_Node(current_item[0]);
 		}
 	}
 }
 
 //创建骨架图，并对该图进行处理（Graph_Pruning）
-void Skeletonize::Convert_To_Graph(const Candidate_Points * candidate_points, Graph * skeleton_graph){
+void Skeletonize::Convert_To_Graph(const Candidate_Points * candidate_points, Graph * skeleton_graph, string pic_num_str){
 #ifndef __SKIP_DEBUG_INFO
-	js_out.open("..\\..\\cache_data\\json\\json"+num2str(worm_data.pic_num)+".js");
+	js_out.open("..\\..\\cache_data\\json\\json"+pic_num_str+".js");
 	js_out<<"worm_json=["<<js_act<<"init"<<js_para<<candidate_points->getPointStr()<<js_end;
 #endif
 	this -> owner_mark.reset();
@@ -215,7 +216,7 @@ void Skeletonize::Convert_To_Graph(const Candidate_Points * candidate_points, Gr
 
 	current_item = 0;//将中心线候选点的第一个点设置为当前点，开始建立骨架图
 #ifndef __SKIP_DEBUG_INFO
-	js_out<<js_act<<"select"<<js_para<<candidate_points->getPointStr((Multi_Points)0)<<js_end;
+	js_out<<js_act<<"select"<<js_para<<candidate_points->getPointStr(static_cast<Multi_Points>(0))<<js_end;
 #endif
 
 	stack.top = 0;

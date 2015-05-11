@@ -59,5 +59,5 @@ private:
 	void Search_Unused_Points();
 	void Connecting_End();
 public:
-	void Convert_To_Graph(const Candidate_Points * candidate_center_points, Graph * skeleton_graph);
+	void Convert_To_Graph(const Candidate_Points * candidate_center_points, Graph * skeleton_graph, std::string pic_num_str);
 };

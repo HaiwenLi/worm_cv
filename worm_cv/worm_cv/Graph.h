@@ -57,7 +57,7 @@ public:
 	void Select_Largest_subgraph(bool * Node_Saved);
 };
 
-class Graph{
+class Graph:public Cache_Savable{
 private:
 	int node_num;
 	Graph_Node node[SKELETONIZE::POINT_NUM_MAX];
@@ -75,6 +75,7 @@ private:
 	int Rotate_To_Next(int base_node, double direction) const;
 public:
 	Graph(){};
+	~Graph() {};
 	void Reset(){
 		node_num = 0;
 		subgraph_count.Reset();
@@ -117,5 +118,5 @@ public:
 	bool Calc_End_Direction_Vec(int end_node, double * derection_vec) const;
 	// 边缘探测函数，运行该函数将去除图的内部结点、内部边，并调整图的存储
 	void Edge_Search(Graph & pruned_graph);
-	void Save2File(std::string file_name);
+	void Save2File(std::string file_name) override;
 };
