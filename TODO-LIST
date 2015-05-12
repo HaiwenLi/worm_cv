@@ -1,8 +1,10 @@
 package Search_Backbone into a class
 	providing public method to resolve raw image flows into centerlines
-		done
 	use enum::stage to save current status, do output when detect ends or error occurs(in the deconstructor)
+(done，but is 2.5 times slower after brought in inherit，the corresponding part is even 8 times slower，need black-tech instead)
 
+black-tech
+	void ptr + offset
 
 decoupling Skeletonize and Candidate_Points/Graph
 	move used-point-check
@@ -10,7 +12,6 @@ decoupling Skeletonize and Candidate_Points/Graph
 		if Query_Points_By_Pointer find a used point, connect it to current and stop
 		introduce last_bifurcate to help find the pointer direction
 	move Calc_End_Direction_Vec
-
 
 
 add deserialization
