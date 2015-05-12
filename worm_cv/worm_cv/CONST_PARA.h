@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-//#define __OUTPUT_DEBUG_INFO
-//#define __OUTPUT_STAGE_INFO
+#define __OUTPUT_DEBUG_INFO
+#define __OUTPUT_STAGE_INFO
 
 namespace WORM{
 	const int IMAGE_SIZE = 512;
@@ -117,9 +117,3 @@ struct Multi_Points{
 	}
 };
 std::ostream & operator<< (std::ostream & out, Multi_Points multi_points);
-
-class Cache_Savable{
-public:
-	virtual void Save2File(std::string) = 0;
-	virtual ~Cache_Savable(){};
-};

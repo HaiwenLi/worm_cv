@@ -6,15 +6,15 @@
 class Owner_Mark;
 
 // Candidate_Center_Points结构体表示中心线候选点
-class Candidate_Points:public Cache_Savable{
+class Candidate_Points{
 private:
 	int point_num; // 中心点的个数
 	int cood[SKELETONIZE::POINT_NUM_MAX][2];//候选点坐标
 	int hash_table[WORM::IMAGE_SIZE + 1];//hash表，表中每项存储的是中心线候选点x坐标小于该位置的数目
 	int current_line;
 	mutable int range_x[2], range_y[2];
-	Candidate_Points(const Candidate_Points &){};
-	Candidate_Points & operator= (const Candidate_Points &){};
+	Candidate_Points(const Candidate_Points &){}
+	Candidate_Points & operator= (const Candidate_Points &) { return *this; }
 	void Range_Calc(const Multi_Points & base_points) const;
 
 public:
@@ -35,8 +35,8 @@ public:
 	Multi_Points Query_Points_Nearby(const Multi_Points & base_points, const Owner_Mark & point_info) const;
 	Multi_Points Query_Points_By_Pointer(const double * base_point, const double * direct_vec, const Owner_Mark & point_info) const;
 	void Add_Line();
-	void Add_Point_To_Line(int y);
-	void Save2File(std::string file_name) override;
+	void Add_Point_To_Line(int y); 
+	static void Candidate_Points::persistence(int *obj_ptr, std::string file_name);
 	std::string getPointStr(const Multi_Points & points) const;
 	std::string getPointStr() const;
 };

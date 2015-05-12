@@ -17,17 +17,24 @@ void Search_Backbone::Data_Processing() {
 	clockwise_tail = backbone.Clockwise_Direct_Calc(PARTITION_NUM / 2, PARTITION_NUM - 1);
 	clockwise_whole = backbone.Clockwise_Direct_Calc(0, PARTITION_NUM - 1);
 	first_pic = false;
-	++pic_num;
 	delete[] worm_width;
 }
 
-void Search_Backbone::Data_Save(){
-	static string cache_dir_str[FINISH] = { "", "candidate_points\\", "graph_unpruned\\", "graph_pruned\\", "backbone_unsmoothed\\", "backbone_smoothed\\"};
-	static Cache_Savable * stage_cache[FINISH] = {&candidate_center_points, &candidate_center_points, &skeleton_graph, &pruned_graph, &backbone, &backbone };
+void Search_Backbone::Data_Save() {
+	static auto candidate_ptr = reinterpret_cast<int *>(&candidate_center_points);
+	static auto skeleton_graph_ptr = reinterpret_cast<int *>(&skeleton_graph);
+	static auto pruned_graph_ptr = reinterpret_cast<int *>(&pruned_graph);
+	static auto backbone_ptr = reinterpret_cast<int *>(&backbone);
+
+	static int *obj_ptrs[FINISH] = {nullptr, candidate_ptr, skeleton_graph_ptr, pruned_graph_ptr, backbone_ptr, backbone_ptr};
+	static void (* func_ptrs[FINISH])(int *obj_ptr, string file_dir) = {nullptr, Candidate_Points::consistense_serialize, 
+		Graph::Save2File, Graph::Save2File, Centerline::Save2File, Centerline::Save2File };
+	static string cache_dir_str[FINISH] = { "", "candidate_points\\", "graph_unpruned\\", "graph_pruned\\", "backbone_unsmoothed\\", "backbone_smoothed\\" };
+
 	auto pic_num_str = num2str(pic_num);
 #ifdef __OUTPUT_DEBUG_INFO
-	for (int i = CANDIDATE; i < current_stage; ++i){
-		stage_cache[i]->Save2File(cache_dir + cache_dir_str[i] + pic_num_str);
+	for (int i = CANDIDATE; i <= current_stage; ++i){
+		func_ptrs[i](obj_ptrs[i], cache_dir + cache_dir_str[i] + pic_num_str);
 	}
 #endif
 }
@@ -60,5 +67,6 @@ const Centerline *Search_Backbone::Search(const Mat & image){
 	Data_Processing();
 	Data_Save();
 	Next_Stage();
+	++ pic_num;
 	return &backbone;
 }

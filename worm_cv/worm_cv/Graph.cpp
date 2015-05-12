@@ -231,9 +231,8 @@ int * Graph::Get_End_Node() const{
 	return end_node;
 }
 
-void Graph::Save2File(string file_name){
+void Graph::persistence(int * obj_ptr, string file_name) {
 	ofstream file(file_name.c_str(), ios::binary);
-	file.write((char *)&node_num, sizeof(int));
-	file.write((char *)node, node_num * sizeof(Graph_Node));
+	file.write(reinterpret_cast<char *>(obj_ptr), sizeof(Graph));
 	file.close();
 }
