@@ -21,18 +21,18 @@ void Search_Backbone::Data_Processing() {
 }
 
 void Search_Backbone::Data_Save() {
+#ifdef __OUTPUT_DEBUG_INFO
 	static auto candidate_ptr = reinterpret_cast<int *>(&candidate_center_points);
 	static auto skeleton_graph_ptr = reinterpret_cast<int *>(&skeleton_graph);
 	static auto pruned_graph_ptr = reinterpret_cast<int *>(&pruned_graph);
 	static auto backbone_ptr = reinterpret_cast<int *>(&backbone);
 
 	static int *obj_ptrs[FINISH] = {nullptr, candidate_ptr, skeleton_graph_ptr, pruned_graph_ptr, backbone_ptr, backbone_ptr};
-	static void (* func_ptrs[FINISH])(int *obj_ptr, string file_dir) = {nullptr, Candidate_Points::consistense_serialize, 
-		Graph::Save2File, Graph::Save2File, Centerline::Save2File, Centerline::Save2File };
+	static void (* func_ptrs[FINISH])(int *obj_ptr, string file_dir) = {nullptr, Candidate_Points::persistence, 
+		Graph::persistence, Graph::persistence, Centerline::persistence, Centerline::persistence };
 	static string cache_dir_str[FINISH] = { "", "candidate_points\\", "graph_unpruned\\", "graph_pruned\\", "backbone_unsmoothed\\", "backbone_smoothed\\" };
 
 	auto pic_num_str = num2str(pic_num);
-#ifdef __OUTPUT_DEBUG_INFO
 	for (int i = CANDIDATE; i <= current_stage; ++i){
 		func_ptrs[i](obj_ptrs[i], cache_dir + cache_dir_str[i] + pic_num_str);
 	}

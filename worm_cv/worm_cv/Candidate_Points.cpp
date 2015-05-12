@@ -147,7 +147,7 @@ Multi_Points Candidate_Points::Query_Points_By_Pointer(const double * base_point
 
 }
 
-void Candidate_Points::consistense_serialize(int *obj_ptr, string file_name) {
+void Candidate_Points::persistence(int *obj_ptr, string file_name) {
 	ofstream file(file_name.c_str(), ios::binary);
 	file.write(reinterpret_cast<char *>(obj_ptr), sizeof(Candidate_Points));
 	file.close();

@@ -80,7 +80,7 @@ Clockwise_Direct Centerline::Clockwise_Direct_Calc(int head_index, int tail_inde
 	else return COUNTER_CLOCKWISE;//否则返回逆时针
 }
 
-void Centerline::Save2File(int * obj_ptr, string file_name){
+void Centerline::persistence(int * obj_ptr, string file_name){
 	static auto length_offset = &(static_cast<Centerline *>(nullptr)->length) - static_cast<int *>(nullptr);
 	static auto cood_offset = &(static_cast<Centerline *>(nullptr)->cood) - static_cast<double(**)[2]>(nullptr);
 	auto length = *(reinterpret_cast<int *>(obj_ptr + length_offset));
