@@ -67,7 +67,7 @@ void Owner_Mark::Set_Check_Mode(CHECK_MODE check_mode, int specific_index){
 void Skeletonize::Add_Into_Graph(int parent_node){
 	owner_mark.Set_Owner_Node(current_item, skeleton_graph -> Get_Node_Num());
 	skeleton_graph -> Add_Node(candidate_points->Get_Center(current_item), parent_node);
-#ifndef __SKIP_DEBUG_INFO
+#ifdef __OUTPUT_DEBUG_INFO
 	js_out<<js_act<<"addNode"<<js_end;
 #endif
 }
@@ -83,7 +83,7 @@ void Skeletonize::Current_Item_Bifurcate(int parent_node){
 				if (branch_stamp[j] == i)
 					temp.Add(current_item[j]);
 			stack.Push(temp, parent_node);
-#ifndef __SKIP_DEBUG_INFO
+#ifdef __OUTPUT_DEBUG_INFO
 			js_out<<"{\"continue\":\"true\",\"action\":\"setStack"<<js_para<<candidate_points->getPointStr(temp)<<js_end;
 #endif
 		}
@@ -94,7 +94,7 @@ void Skeletonize::Current_Item_Bifurcate(int parent_node){
 			if (branch_stamp[j] == branch_num - 1)
 				current_item.Add(current_item[j]);
 	}
-#ifndef __SKIP_DEBUG_INFO
+#ifdef __OUTPUT_DEBUG_INFO
 	js_out<<js_act<<"select"<<js_para<<candidate_points->getPointStr(current_item)<<js_end;
 	if (branch_num > 1)
 		js_out<<js_act<<"push"<<js_end;
@@ -113,11 +113,11 @@ bool Skeletonize::Search_Next_Points(){
 	if (current_item.size <= 0)
 		return false;
 	else if (current_item.size == 1){
-#ifndef __SKIP_DEBUG_INFO
+#ifdef __OUTPUT_DEBUG_INFO
 		js_out<<js_act<<"select"<<js_para<<candidate_points->getPointStr(current_item)<<js_end;
 #endif
 		current_item = candidate_points -> Query_Points_Nearby(current_item, owner_mark);
-#ifndef __SKIP_DEBUG_INFO
+#ifdef __OUTPUT_DEBUG_INFO
 		if (current_item.size > 1)
 			js_out<<js_act<<"reselect"<<js_para<<candidate_points->getPointStr(current_item)<<js_end;
 #endif
@@ -133,7 +133,7 @@ bool Skeletonize::Check_Up_Stack(){
 	while (stack.top > 0){
 		node_used = false;
 		int stack_top = -- stack.top;
-#ifndef __SKIP_DEBUG_INFO
+#ifdef __OUTPUT_DEBUG_INFO
 		js_out<<js_act<<"pop"<<js_end;
 #endif
 		for (int i = 0;i < stack.item[stack_top].size;++ i)
@@ -141,7 +141,7 @@ bool Skeletonize::Check_Up_Stack(){
 				// 若结点已经使用则将其与母节点相连接
 				int zi_node = owner_mark.Get_Owner_Node(stack.item[stack_top][i]);
 				skeleton_graph -> Connect_Node(zi_node, stack.parent_node[stack_top]);
-#ifndef __SKIP_DEBUG_INFO
+#ifdef __OUTPUT_DEBUG_INFO
 				js_out<<"{\"continue\":\"true\",\"action\":\"connectNode"<<js_para<<num2str(zi_node) + " " + num2str(stack.parent_node[stack_top])<<js_end;
 				js_out<<js_act<<"unselect"<<js_end;
 #endif
@@ -150,7 +150,7 @@ bool Skeletonize::Check_Up_Stack(){
 			}
 		if (node_used == false){// 若结点未使用过则表示栈中已找到所需元素
 			current_item = stack.item[stack_top];
-#ifndef __SKIP_DEBUG_INFO
+#ifdef __OUTPUT_DEBUG_INFO
 			js_out<<js_act<<"setCurrent"<<js_para<<num2str(stack.parent_node[stack_top])<<js_end;;
 #endif
 			Add_Into_Graph(stack.parent_node[stack_top]);
@@ -164,7 +164,7 @@ void Skeletonize::Search_Unused_Points(){
 	for (int i = 0; i < point_num;++ i)
 		if ((owner_mark.*owner_mark.point_available)(i)){
 			current_item = candidate_points->Query_Points_Nearby((Multi_Points) i, owner_mark);
-#ifndef __SKIP_DEBUG_INFO
+#ifdef __OUTPUT_DEBUG_INFO
 			js_out<<js_act<<"select"<<js_para<<candidate_points->getPointStr(current_item)<<js_end;
 #endif
 			Add_Into_Graph(-1);
@@ -192,7 +192,7 @@ void Skeletonize::Connecting_End(){
 			if (current_item.size == 1){
 				end_node_changed = true;
 				skeleton_graph->Connect_Node(end_nodes[i], owner_mark.Get_Owner_Node(current_item[0]));
-#ifndef __SKIP_DEBUG_INFO
+#ifdef __OUTPUT_DEBUG_INFO
 	js_out<<js_act<<"connectNode"<<js_para<<end_nodes[i]<<" "<<owner_mark.Get_Owner_Node(current_item[0])<<js_end;
 #endif
 			}
@@ -204,7 +204,7 @@ void Skeletonize::Connecting_End(){
 
 //创建骨架图，并对该图进行处理（Graph_Pruning）
 void Skeletonize::Convert_To_Graph(const Candidate_Points * candidate_points, Graph * skeleton_graph, string pic_num_str){
-#ifndef __SKIP_DEBUG_INFO
+#ifdef __OUTPUT_DEBUG_INFO
 	js_out.open("..\\..\\cache_data\\json\\json"+pic_num_str+".js");
 	js_out<<"worm_json=["<<js_act<<"init"<<js_para<<candidate_points->getPointStr()<<js_end;
 #endif
@@ -215,7 +215,7 @@ void Skeletonize::Convert_To_Graph(const Candidate_Points * candidate_points, Gr
 	skeleton_graph -> Reset();
 
 	current_item = 0;//将中心线候选点的第一个点设置为当前点，开始建立骨架图
-#ifndef __SKIP_DEBUG_INFO
+#ifdef __OUTPUT_DEBUG_INFO
 	js_out<<js_act<<"select"<<js_para<<candidate_points->getPointStr(static_cast<Multi_Points>(0))<<js_end;
 #endif
 
@@ -225,7 +225,7 @@ void Skeletonize::Convert_To_Graph(const Candidate_Points * candidate_points, Gr
 	while(current_item.size > 0){
 		if (Search_Next_Points())
 			continue;
-#ifndef __SKIP_DEBUG_INFO
+#ifdef __OUTPUT_DEBUG_INFO
 		js_out<<js_act<<"removeCurrent"<<js_end;
 #endif
 		if (Check_Up_Stack())
@@ -233,7 +233,7 @@ void Skeletonize::Convert_To_Graph(const Candidate_Points * candidate_points, Gr
 		Search_Unused_Points();
 	}
 	Connecting_End();
-#ifndef __SKIP_DEBUG_INFO
+#ifdef __OUTPUT_DEBUG_INFO
 	js_out<<"]";
 	js_out.close();
 #endif
