@@ -1,0 +1,67 @@
+package Search_Backbone into a class
+	providing public method to resolve raw image flows into centerlines
+	use enum::stage to save current status, do output when detect ends or error occurs(in the deconstructor)
+(done，but is 2.5 times slower after brought in inherit, the corresponding part is even 8 times slower, need black-tech instead)
+
+black-tech
+	void ptr + offset
+(done)
+
+add serialization of Centerline
+add deserialization
+
+decoupling Skeletonize and Candidate_Points/Graph
+	move used-point-check
+		thus remove the ugly State_Machine Owner_Marker, simply use array
+		if Query_Points_By_Pointer find a used point, connect it to current and stop
+		introduce last_bifurcate to help find the pointer direction
+	move Calc_End_Direction_Vec
+
+wrap json interface(jsoncpp?)
+
+
+use graph analyze to help find correct root(replace current Prune Method and Root_Search):
+	
+	new method should generate a new graph:
+		use array to mark the deleted vertex:		
+			find largest subgraph
+			edge search (adapt current one)
+			prune (according following)
+			if need deal with clockwise
+			head select
+		rebuild the new graph:
+
+	ii.		if 0 leaf vertex error
+	iii. 	delete leaf branch not long enough
+	iv.	delete other leaf branch, leave two longest
+	v.		use edge search to delete inner vertex
+	vi.		if 0 bifurcate vertex, root find
+			if 1 bifurcate vertex, use clockwise to judge
+				use exist method in Centerline.cpp
+			if 2 bifurcate vertex, delete the shorter path between them, root find
+
+	maintain a dynamic bifurcate-vertex-branch list
+		init:
+			find all bifurcate vertex
+			follow each adjacent till meet a special vertex
+		element in list include:
+			this vertex
+			one adjacent vertex
+			leaf-vertex/bifurcate-vertex connected to this bifurcate-vertex through the adjacent vertex
+			path-length
+		if leaf branch deleted:
+			delete the corresponding element if degree==2
+		if bifurcate branch deleted:
+			delete the two corresponding element if degree==2
+
+
+add cross-check into Skeletonize
+	use center-point and hash-list to accelerate	(segment tree?)
+	sort in-time | maintain a stack
+	use cross-product to judge cross-status:
+		[(a2-a1)\times(b2-a2)] \dot [(b1-a2)\times(b2-a2)] > 0
+		and
+		[(a1-a2)\times(b1-a1)] \dot [(b2-a1)\times(b1-a1)] > 0
+	
+	2 line split into 4 when cross checked
+	if length<sqrt(2) after split, remove
