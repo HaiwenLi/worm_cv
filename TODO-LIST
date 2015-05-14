@@ -7,14 +7,16 @@ black-tech
 	void ptr + offset
 (done)
 
-add serialization of Centerline
-add deserialization
-
-decoupling Skeletonize and Candidate_Points/Graph
+decoupling Skeletonize and Candidate_Points
 	move used-point-check
 		thus remove the ugly State_Machine Owner_Marker, simply use array
 		if Query_Points_By_Pointer find a used point, connect it to current and stop
-		introduce last_bifurcate to help find the pointer direction
+(done)
+
+add serialization of Centerline
+add deserialization
+
+decoupling Skeletonize and Graph
 	move Calc_End_Direction_Vec
 
 wrap json interface(jsoncpp?)

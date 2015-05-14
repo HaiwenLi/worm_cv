@@ -31,9 +31,12 @@ public:
 		return point_num;
 	}
 	const double * Get_Center(const Multi_Points & points) const;
+	const int * Get_Point(int index) const{
+		return cood[index];
+	}
 	int Branch_Analize(Multi_Points & point_find, int * branch_stamp) const;
-	Multi_Points Query_Points_Nearby(const Multi_Points & base_points, const Owner_Mark & point_info) const;
-	Multi_Points Query_Points_By_Pointer(const double * base_point, const double * direct_vec, const Owner_Mark & point_info) const;
+	Multi_Points Query_Points_Nearby(const Multi_Points & base_points) const;
+	Multi_Points Query_Points_By_Pointer(const double * base_point, const double * direct_vec) const;
 	void Add_Line();
 	void Add_Point_To_Line(int y); 
 	static void Candidate_Points::persistence(int *obj_ptr, std::string file_name);

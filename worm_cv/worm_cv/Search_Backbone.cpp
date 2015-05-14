@@ -57,7 +57,8 @@ const Centerline *Search_Backbone::Search(const Mat & image){
 	candidate_points_detect.Detect_Points(image, candidate_center_points, worm_full_width, worm_area);
 	Next_Stage();
 	skeletonize.Convert_To_Graph(& candidate_center_points, & skeleton_graph, pic_num_str);
-	Next_Stage(); 
+	Next_Stage();
+	Data_Save();
 	skeleton_graph.Edge_Search(pruned_graph);
 	Next_Stage();
 	Root_Search(pruned_graph).Search_Backbone(backbone, clockwise_whole, clockwise_head, clockwise_tail, worm_full_width, first_pic);

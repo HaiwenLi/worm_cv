@@ -93,8 +93,7 @@ const double *Candidate_Points::Get_Center(const Multi_Points & points) const{
 	return center;
 }
 
-Multi_Points Candidate_Points::Query_Points_Nearby(const Multi_Points & base_points, 
-												   const Owner_Mark & owner_mark) const{
+Multi_Points Candidate_Points::Query_Points_Nearby(const Multi_Points & base_points) const{
 	if (base_points.size <= 0)
 		throw new Simple_Exception("Query_Points_Nearby:Input Should Include At Least 1 Point!");
 	Multi_Points nearby_points;
@@ -109,8 +108,6 @@ Multi_Points Candidate_Points::Query_Points_Nearby(const Multi_Points & base_poi
 			i = hash_table[cood[i][0] + 1] - 1;
 			continue;
 		}
-		if (cood[i][1] < range_y[0] || !(owner_mark.*owner_mark.point_available)(i))
-			continue;
 		for (int j = 0;j < base_points.size;++ j)
 			if (Is_8_Neighbour(cood[base_points[j]], cood[i])){
 				nearby_points.Add(i);
@@ -120,8 +117,7 @@ Multi_Points Candidate_Points::Query_Points_Nearby(const Multi_Points & base_poi
 	return nearby_points;
 }
 
-Multi_Points Candidate_Points::Query_Points_By_Pointer(const double * base_point, const double * direct_vec, 
-													   const Owner_Mark & owner_mark) const{
+Multi_Points Candidate_Points::Query_Points_By_Pointer(const double * base_point, const double * direct_vec) const{
 	using namespace SKELETONIZE;
 
 	int start = hash_table[max(int(base_point[0] - METRICS_MAX), 0)];
@@ -130,8 +126,7 @@ Multi_Points Candidate_Points::Query_Points_By_Pointer(const double * base_point
 	double tan_angle_diff, dist, direct_vec_temp[2];
 	Select_Minimum metrics_min(METRICS_MAX, -1);
 	for (int i = start; i < end; ++i){
-		if (!(owner_mark.*owner_mark.point_available)(i) ||
-			cood[i][1] < base_point[1] - METRICS_MAX ||	cood[i][1] > base_point[1] + METRICS_MAX)
+		if (cood[i][1] < base_point[1] - METRICS_MAX ||	cood[i][1] > base_point[1] + METRICS_MAX)
 			continue;
 		direct_vec_temp[0] = cood[i][0] - base_point[0];
 		direct_vec_temp[1] = cood[i][1] - base_point[1];

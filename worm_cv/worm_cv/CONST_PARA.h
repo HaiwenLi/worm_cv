@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-//#define __OUTPUT_DEBUG_INFO
-//#define __OUTPUT_STAGE_INFO
+#define __OUTPUT_DEBUG_INFO
+#define __OUTPUT_STAGE_INFO
 
 namespace WORM{
 	const int IMAGE_SIZE = 512;
@@ -22,7 +22,7 @@ namespace BW{
 namespace SKELETONIZE{
 	const int POINT_NUM_MAX = 600;
 	const int DEGREE_MAX = 5;		//结点最大度数
-	const int NODE_SIZE_MAX = 10;   //一个结点中包含最大的点数
+	const int NODE_SIZE_MAX = 20;   //一个结点中包含最大的点数
 	const int STORAGE_MAX = 30;
 	const int SUBGRAPH_MAX = 50;
 	const int METRICS_MAX = 8;

@@ -8,7 +8,7 @@ void Image_Get(Mat & binary_image, int img_index);
 int main(){
 	Mat image;
 	Search_Backbone search_backbone(1001);
-	auto PIC_NUM = 100;
+	auto PIC_NUM = 99;
 	for (auto pic_num = 0; pic_num < PIC_NUM; ++pic_num){
 		Image_Get(image, pic_num);
 		search_backbone.Search(image);

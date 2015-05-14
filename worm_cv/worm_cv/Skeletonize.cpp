@@ -34,38 +34,9 @@ void Bifurcate_Stack::Push(const Multi_Points & in_stack_points, int parent_inde
 	++ top;
 }
 
-Owner_Mark::Owner_Mark(){
-	reset();
-}
-
-void Owner_Mark::reset(){
-	specific_index = 0;
-	this -> point_available = & Owner_Mark::check_All;
-	for (int i = 0;i < SKELETONIZE::POINT_NUM_MAX;++ i)
-		owner_node[i] = -1;
-}
-
-void Owner_Mark::Set_Owner_Node(Multi_Points points, int node_index){
-	for (int i = 0;i < points.size;++ i)
-		owner_node[points[i]] = node_index;
-}
-
-int Owner_Mark::Get_Owner_Node(int point_index) const{
-	return owner_node[point_index];
-}
-
-void Owner_Mark::Set_Check_Mode(CHECK_MODE check_mode, int specific_index){
-	this -> specific_index = specific_index;
-	if (check_mode == CHECK_ALL)
-		this -> point_available = &Owner_Mark::check_All;
-	else if(check_mode == CHECK_NONE)
-		this -> point_available = &Owner_Mark::check_None;
-	else
-		this -> point_available = &Owner_Mark::check_Specific;
-}
-
 void Skeletonize::Add_Into_Graph(int parent_node){
-	owner_mark.Set_Owner_Node(current_item, skeleton_graph -> Get_Node_Num());
+	for (int i = 0; i < current_item.size; ++i)
+		point_mark[current_item[i]] = skeleton_graph->Get_Node_Num();
 	skeleton_graph -> Add_Node(candidate_points->Get_Center(current_item), parent_node);
 #ifdef __OUTPUT_DEBUG_INFO
 	js_out<<js_act<<"addNode"<<js_end;
@@ -101,22 +72,62 @@ void Skeletonize::Current_Item_Bifurcate(int parent_node){
 #endif
 }
 
+int Skeletonize::Find_Start_Point(const Multi_Points & item, double * pointer) const{
+	Select_Minimum furthest_point(WORM::INF, -1);
+	const int * point;
+	for (int i = 0; i < item.size; ++i){
+		point = candidate_points->Get_Point(item[i]);
+		furthest_point.Renew(-point[0] * pointer[0] - point[1] * pointer[1], i);
+	}
+	return furthest_point.Get_Min_Index();
+}
+
+void Skeletonize::Check_Used_Point(Multi_Points & item) const{
+	for (int i = item.size-1; i >= 0; --i){
+		if (point_mark[item[i]] >= 0){
+			--item.size;
+			if (i<item.size)
+				item[i] = item[item.size];
+		}
+	}
+}
+
+bool Skeletonize::Search_Further_Points(Multi_Points & last_item, int current_node){
+	double direction_vec[2], base_point[2];
+	if (!skeleton_graph->Calc_End_Direction_Vec(current_node, direction_vec))
+		return false;
+	const int *base_point_temp;
+	int base_index = Find_Start_Point(last_item, direction_vec);
+
+	base_point_temp = candidate_points->Get_Point(last_item[base_index]);
+	base_point[0] = base_point_temp[0] + SKELETONIZE::ANGLE_ERROR*direction_vec[0];
+	base_point[1] = base_point_temp[1] + SKELETONIZE::ANGLE_ERROR*direction_vec[1];
+	current_item = candidate_points->Query_Points_By_Pointer(base_point, direction_vec);
+	if (current_item.size > 0 && point_mark[current_item[0]] >= 0){
+		skeleton_graph->Connect_Node(point_mark[current_item[0]], current_node);
+		current_item.size = 0;
+		return true;
+	}
+	return false;
+}
+
 bool Skeletonize::Search_Next_Points(){
 	int current_node = skeleton_graph->Get_Node_Num()-1;
-	double direction_vec[2];
-	current_item = candidate_points -> Query_Points_Nearby(current_item, owner_mark);
-	if (current_item.size <= 0 && skeleton_graph -> Calc_End_Direction_Vec(current_node, direction_vec)){
-		current_item = candidate_points->Query_Points_By_Pointer
-			(skeleton_graph -> Get_Center(current_node), direction_vec, owner_mark);
-	}
-
+	double direction_vec[2], base_point[2];
+	const int * base_point_temp;
+	Multi_Points last_item = current_item;
+	current_item = candidate_points -> Query_Points_Nearby(current_item);
+	Check_Used_Point(current_item);
+	if (current_item.size <= 0)
+		Search_Further_Points(last_item, current_node);
 	if (current_item.size <= 0)
 		return false;
 	else if (current_item.size == 1){
 #ifdef __OUTPUT_DEBUG_INFO
 		js_out<<js_act<<"select"<<js_para<<candidate_points->getPointStr(current_item)<<js_end;
 #endif
-		current_item = candidate_points -> Query_Points_Nearby(current_item, owner_mark);
+		current_item = candidate_points -> Query_Points_Nearby(current_item);
+		Check_Used_Point(current_item);
 #ifdef __OUTPUT_DEBUG_INFO
 		if (current_item.size > 1)
 			js_out<<js_act<<"reselect"<<js_para<<candidate_points->getPointStr(current_item)<<js_end;
@@ -137,9 +148,9 @@ bool Skeletonize::Check_Up_Stack(){
 		js_out<<js_act<<"pop"<<js_end;
 #endif
 		for (int i = 0;i < stack.item[stack_top].size;++ i)
-			if (!(owner_mark.*owner_mark.point_available)(stack.item[stack_top][i])){
+			if (point_mark[stack.item[stack_top][i]] >=0){
 				// 若结点已经使用则将其与母节点相连接
-				int zi_node = owner_mark.Get_Owner_Node(stack.item[stack_top][i]);
+				int zi_node = point_mark[stack.item[stack_top][i]];
 				skeleton_graph -> Connect_Node(zi_node, stack.parent_node[stack_top]);
 #ifdef __OUTPUT_DEBUG_INFO
 				js_out<<"{\"continue\":\"true\",\"action\":\"connectNode"<<js_para<<num2str(zi_node) + " " + num2str(stack.parent_node[stack_top])<<js_end;
@@ -162,8 +173,9 @@ bool Skeletonize::Check_Up_Stack(){
 
 void Skeletonize::Search_Unused_Points(){
 	for (int i = 0; i < point_num;++ i)
-		if ((owner_mark.*owner_mark.point_available)(i)){
-			current_item = candidate_points->Query_Points_Nearby((Multi_Points) i, owner_mark);
+		if (point_mark[i] < 0){
+			current_item = candidate_points->Query_Points_Nearby((Multi_Points) i);
+			Check_Used_Point(current_item);
 #ifdef __OUTPUT_DEBUG_INFO
 			js_out<<js_act<<"select"<<js_para<<candidate_points->getPointStr(current_item)<<js_end;
 #endif
@@ -173,31 +185,30 @@ void Skeletonize::Search_Unused_Points(){
 }
 
 void Skeletonize::Connecting_End(){	
-	int end_node_num, * end_nodes;
-	double direction_vec[2];
+	int end_node_num, * end_nodes, base_index;
+	double direction_vec[2], base_point[2];
 	bool end_node_changed = true;
 	end_nodes = skeleton_graph->Get_End_Node();
 	end_node_num = skeleton_graph->Get_End_Num();
-	owner_mark.Set_Check_Mode(Owner_Mark::CHECK_SPECIFIC);
+	const int * base_point_temp;
 	
 	while (end_node_changed){
 		end_node_changed = false;
-		for (int i = 0;i < end_node_num;++ i){
-			if (!skeleton_graph->Is_End_Node(end_nodes[i]))
+		for (int i = 0; i < end_node_num; ++i){
+			if (!skeleton_graph->Is_End_Node(end_nodes[i]) || end_nodes[i] < 0)
 				continue;
-			owner_mark.set_Specific_index(end_nodes[i]);
 			current_item.size = 0;
-			if (skeleton_graph -> Calc_End_Direction_Vec(end_nodes[i], direction_vec))
-				current_item = candidate_points->Query_Points_By_Pointer(skeleton_graph -> Get_Center(end_nodes[i]), direction_vec, owner_mark);
-			if (current_item.size == 1){
+			for (int j = 0; j < point_num; ++j){
+				if (point_mark[j] == end_nodes[i])
+					current_item.Add(j);
+			}
+			if (Search_Further_Points(current_item, end_nodes[i])){
 				end_node_changed = true;
-				skeleton_graph->Connect_Node(end_nodes[i], owner_mark.Get_Owner_Node(current_item[0]));
+				end_nodes[i] = point_mark[current_item[0]];
 #ifdef __OUTPUT_DEBUG_INFO
-	js_out<<js_act<<"connectNode"<<js_para<<end_nodes[i]<<" "<<owner_mark.Get_Owner_Node(current_item[0])<<js_end;
+				js_out << js_act << "connectNode" << js_para << end_nodes[i] << " " << point_mark[current_item[0]] << js_end;
 #endif
 			}
-			if (current_item.size == 1)
-				end_nodes[i] = owner_mark.Get_Owner_Node(current_item[0]);
 		}
 	}
 }
@@ -208,10 +219,12 @@ void Skeletonize::Convert_To_Graph(const Candidate_Points * candidate_points, Gr
 	js_out.open("..\\..\\cache_data\\json\\json"+pic_num_str+".js");
 	js_out<<"worm_json=["<<js_act<<"init"<<js_para<<candidate_points->getPointStr()<<js_end;
 #endif
-	this -> owner_mark.reset();
 	this -> candidate_points = candidate_points;
 	this -> skeleton_graph = skeleton_graph;
-	point_num = candidate_points -> Get_Point_Num();
+	point_num = candidate_points->Get_Point_Num();
+	point_mark = new int[point_num];
+	for (int i = 0; i < point_num; ++i)
+		point_mark[i] = -1;
 	skeleton_graph -> Reset();
 
 	current_item = 0;//将中心线候选点的第一个点设置为当前点，开始建立骨架图
@@ -222,7 +235,9 @@ void Skeletonize::Convert_To_Graph(const Candidate_Points * candidate_points, Gr
 	stack.top = 0;
 	Add_Into_Graph(-1);
 
+	int temp;
 	while(current_item.size > 0){
+		temp = skeleton_graph->Get_Node_Num();
 		if (Search_Next_Points())
 			continue;
 #ifdef __OUTPUT_DEBUG_INFO
@@ -237,4 +252,5 @@ void Skeletonize::Convert_To_Graph(const Candidate_Points * candidate_points, Gr
 	js_out<<"]";
 	js_out.close();
 #endif
+	delete[] point_mark;
 }
