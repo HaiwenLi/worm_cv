@@ -231,8 +231,14 @@ int * Graph::Get_End_Node() const{
 	return end_node;
 }
 
-void Graph::persistence(int * obj_ptr, string file_name) {
-	ofstream file(file_name.c_str(), ios::binary);
+void Graph::persistence(void * obj_ptr, string out_file) {
+	ofstream file(out_file.c_str(), ios::binary);
 	file.write(reinterpret_cast<char *>(obj_ptr), sizeof(Graph));
+	file.close();
+}
+
+void Graph::anti_persistence(void* obj_ptr, std::string in_file) {
+	ifstream file(in_file.c_str(), ios::binary);
+	file.read(reinterpret_cast<char *>(obj_ptr), sizeof(Graph));
 	file.close();
 }

@@ -142,22 +142,28 @@ Multi_Points Candidate_Points::Query_Points_By_Pointer(const double * base_point
 
 }
 
-void Candidate_Points::persistence(int *obj_ptr, string file_name) {
-	ofstream file(file_name.c_str(), ios::binary);
+void Candidate_Points::persistence(void *obj_ptr, string out_file) {
+	ofstream file(out_file.c_str(), ios::binary);
 	file.write(reinterpret_cast<char *>(obj_ptr), sizeof(Candidate_Points));
+	file.close();
+}
+
+void Candidate_Points::anti_persistence(void* obj_ptr, std::string in_file){
+	ifstream file(in_file.c_str(), ios::binary);
+	file.read(reinterpret_cast<char *>(obj_ptr), sizeof(Candidate_Points));
 	file.close();
 }
 
 string Candidate_Points::getPointStr(const Multi_Points & points) const{
 	stringstream stream;
 	string s;
-	for (int i = 0;i < points.size;++ i)
+	for (auto i = 0;i < points.size;++ i)
 		stream << cood[points[i]][0]<<" "<<cood[points[i]][1]<<"   ";
 	s = stream.str();
 	return s;
 }
 
-string Candidate_Points::getPointStr() const{
+string Candidate_Points::getWholeStr() const{
 	stringstream stream;
 	string s;
 	for (int i = 0;i < point_num;++ i)

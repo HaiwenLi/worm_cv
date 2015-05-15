@@ -13,7 +13,7 @@ namespace WORM{
 namespace BW{
 	const int SIDE_WIDTH = 4;
 	const double MINIMUM_HOLE_PROPORTION = 0.05;	  //
-	const int BINARY_THRESHOLD = 50;		          //区分线虫与背景的阈值，取所有值小于它的点形成线虫区域
+	extern int BINARY_THRESHOLD;		          //区分线虫与背景的阈值，取所有值小于它的点形成线虫区域
 	const double LAPLACIAN_THRES = -0.35 * 4;     //对距离做laplacian变换后的矩阵中小于此值的点被取为中心线候选点
 	const double RAP_THRESHOLD = 0.6;		          //宽度大于线虫平均宽度的该倍数时，认为线虫发生了粘连
 	const double RAP_SLOPE = RAP_THRESHOLD / (1 - RAP_THRESHOLD);
@@ -51,6 +51,8 @@ namespace ROOT_SMOOTH{
 	const int FULL_PARTS = MULTIPLIER * (2 * SMOOTH_SCOPE + 1);
 	const int HALF_PARTS = (FULL_PARTS - 1) / 2;
 }
+
+const std::string CACHE_DIR = "..\\..\\cache_data\\";
 
 /*
 	VIRTUAL_COORDINATE是对于目前系统而言定义的虚拟坐标系（满足右手法则），该坐标系规定：

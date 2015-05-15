@@ -20,32 +20,30 @@ void Search_Backbone::Data_Processing() {
 	delete[] worm_width;
 }
 
-void Search_Backbone::Data_Save() {
-#ifdef __OUTPUT_DEBUG_INFO
-	static auto candidate_ptr = reinterpret_cast<int *>(&candidate_center_points);
-	static auto skeleton_graph_ptr = reinterpret_cast<int *>(&skeleton_graph);
-	static auto pruned_graph_ptr = reinterpret_cast<int *>(&pruned_graph);
-	static auto backbone_ptr = reinterpret_cast<int *>(&backbone);
-
-	static int *obj_ptrs[FINISH] = {nullptr, candidate_ptr, skeleton_graph_ptr, pruned_graph_ptr, backbone_ptr, backbone_ptr};
-	static void (* func_ptrs[FINISH])(int *obj_ptr, string file_dir) = {nullptr, Candidate_Points::persistence, 
-		Graph::persistence, Graph::persistence, Centerline::persistence, Centerline::persistence };
-	static string cache_dir_str[FINISH] = { "", "candidate_points\\", "graph_unpruned\\", "graph_pruned\\", "backbone_unsmoothed\\", "backbone_smoothed\\" };
-
-	auto pic_num_str = num2str(pic_num);
-	for (int i = CANDIDATE; i <= current_stage; ++i){
-		func_ptrs[i](obj_ptrs[i], cache_dir + cache_dir_str[i] + pic_num_str);
-	}
-#endif
+void Search_Backbone::persistence(void* obj_ptr, std::string out_file){
+	auto typed_ptr = reinterpret_cast<Search_Backbone *>(obj_ptr);
+	ofstream file(out_file.c_str(), ios::binary);
+	file.write(reinterpret_cast<char *>(&typed_ptr->worm_full_width), sizeof(double));
+	file.write(reinterpret_cast<char *>(&typed_ptr->worm_area), sizeof(double));
+	file.close();
 }
+
 
 void Search_Backbone::Next_Stage(){
 	static string stage_words[FINISH] = { "Candidates Detect Complete!", "Skeletonize Complete!", "Graph Prune Complete!", 
-		"Backbone Search Complete!", "Smooth Complete!", "All Finished!\n"};
+		"Backbone Search Complete!", "Smooth Complete!", "All Finished!\n" };
+	static void *persist_obj_ptrs[FINISH] = { &candidate_center_points, &skeleton_graph, &pruned_graph, &backbone, &backbone, this};
+	static void(*persist_fun_ptrs[FINISH])(void *obj_ptr, string file_dir) = { Candidate_Points::persistence,
+		Graph::persistence, Graph::persistence, Centerline::persistence, Centerline::persistence, persistence};
+	static string cache_dir_strs[FINISH] = {"candidate_points\\", "graph_unpruned\\", "graph_pruned\\", "backbone_unsmoothed\\", "backbone_smoothed\\", "worm_data\\" };
+	auto pic_num_str = num2str(pic_num);
 #ifdef __OUTPUT_STAGE_INFO
 	cout << stage_words[current_stage] << endl;
 #endif
-	current_stage = Stage((current_stage+1) % FINISH);
+#ifdef __OUTPUT_DEBUG_INFO
+	persist_fun_ptrs[current_stage](persist_obj_ptrs[current_stage], CACHE_DIR + cache_dir_strs[current_stage] + pic_num_str);
+#endif
+	current_stage = Stage((current_stage + 1) % FINISH);
 }
 
 
@@ -58,7 +56,6 @@ const Centerline *Search_Backbone::Search(const Mat & image){
 	Next_Stage();
 	skeletonize.Convert_To_Graph(& candidate_center_points, & skeleton_graph, pic_num_str);
 	Next_Stage();
-	Data_Save();
 	skeleton_graph.Edge_Search(pruned_graph);
 	Next_Stage();
 	Root_Search(pruned_graph).Search_Backbone(backbone, clockwise_whole, clockwise_head, clockwise_tail, worm_full_width, first_pic);
@@ -66,7 +63,6 @@ const Centerline *Search_Backbone::Search(const Mat & image){
 	root_smooth.Interpolate_And_Equal_Divide(backbone, ROOT_SMOOTH::PARTITION_NUM);
 	Next_Stage();
 	Data_Processing();
-	Data_Save();
 	Next_Stage();
 	++ pic_num;
 	return &backbone;

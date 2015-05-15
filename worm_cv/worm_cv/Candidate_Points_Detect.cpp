@@ -163,12 +163,13 @@ double Candidate_Points_Detect::Get_Dist(double x, double y) const{
 		distance_matrix.at<float>(x+1, y+1) * alpha * beta);
 }
 
-void Candidate_Points_Detect::Detect_Points(const Mat & image, Candidate_Points & candidate_Points, double width, double area){
+void Candidate_Points_Detect::Detect_Points(const Mat & image, Candidate_Points & candidate_points, double width, double area){
+	candidate_points.Reset();
 	binary_image = image < BW::BINARY_THRESHOLD;
 	Denoise_And_Worm_Locate(area);
-	//Save_Mat_To_File<uchar>(image, cache_dir+"binary_denoised\\"+pic_num_str);
+	//Save_Mat_To_File<uchar>(image, CACHE_DIR+"binary_denoised\\"+pic_num_str);
 	distanceTransform(binary_image, distance_matrix, CV_DIST_L2, CV_DIST_MASK_PRECISE);
 	Distance_Retrace(width);
 	Calc_LapMat_Of_Inner_Part();
-	Catch_Candidate_By_LapMat(candidate_Points);
+	Catch_Candidate_By_LapMat(candidate_points);
 }

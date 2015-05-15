@@ -21,7 +21,6 @@ public:
 	Candidate_Points(){		
 		Reset();
 	};
-	~Candidate_Points() {}
 	void Reset(){
 		point_num = 0;
 		current_line = 0;
@@ -39,9 +38,10 @@ public:
 	Multi_Points Query_Points_By_Pointer(const double * base_point, const double * direct_vec) const;
 	void Add_Line();
 	void Add_Point_To_Line(int y); 
-	static void Candidate_Points::persistence(int *obj_ptr, std::string file_name);
+	static void persistence(void *obj_ptr, std::string out_file);
+	static void anti_persistence(void * obj_ptr, std::string in_file);
 	std::string getPointStr(const Multi_Points & points) const;
-	std::string getPointStr() const;
+	std::string getWholeStr() const;
 };
 
 class Candidate_Points_Detect{

@@ -75,7 +75,9 @@ private:
 	int Rotate_To_Next(int base_node, double direction) const;
 public:
 	Graph(){};
-	~Graph() {};
+	~Graph(){
+		persistence(reinterpret_cast<int *>(this), CACHE_DIR+"Graph_Last_Exit");
+	};
 	void Reset(){
 		node_num = 0;
 		subgraph_count.Reset();
@@ -118,5 +120,6 @@ public:
 	bool Calc_End_Direction_Vec(int end_node, double * derection_vec) const;
 	// 边缘探测函数，运行该函数将去除图的内部结点、内部边，并调整图的存储
 	void Edge_Search(Graph & pruned_graph);
-	static void Graph::persistence(int *obj_ptr, std::string file_name);
+	static void persistence(void *obj_ptr, std::string out_file);
+	static void anti_persistence(void *obj_ptr, std::string in_file);
 };

@@ -30,15 +30,13 @@ private:
 	double worm_full_width;
 	double worm_area;
 	ROOT_SEARCH::Clockwise_Direct clockwise_head, clockwise_tail, clockwise_whole;
-	std::string cache_dir;
 
 	void Data_Processing();
-	void Data_Save();
 	void Next_Stage();
+	static void persistence(void * obj_ptr, std::string out_file);
 public:
 	explicit Search_Backbone(int start_num = 0) :backbone(ROOT_SMOOTH::PARTITION_NUM + 1), pic_num(0), first_pic(true), worm_full_width(WORM::INF), worm_area(WORM::INF){
 		this->pic_num = start_num;
-		cache_dir = "..\\..\\cache_data\\";
 	}
 	void Set_Width(double worm_full_width) {
 		this->worm_full_width = worm_full_width;

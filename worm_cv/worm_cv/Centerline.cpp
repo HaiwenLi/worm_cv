@@ -80,13 +80,24 @@ Clockwise_Direct Centerline::Clockwise_Direct_Calc(int head_index, int tail_inde
 	else return COUNTER_CLOCKWISE;//否则返回逆时针
 }
 
-void Centerline::persistence(int * obj_ptr, string file_name){
-	static auto length_offset = &(static_cast<Centerline *>(nullptr)->length) - static_cast<int *>(nullptr);
-	static auto cood_offset = &(static_cast<Centerline *>(nullptr)->cood) - static_cast<double(**)[2]>(nullptr);
-	auto length = *(reinterpret_cast<int *>(obj_ptr + length_offset));
-	auto cood = *(reinterpret_cast<double (**)[2]>(obj_ptr + cood_offset));
-	ofstream file(file_name.c_str(), ios::binary);
-	file.write(reinterpret_cast<char *>(&length), sizeof(int));
-	file.write(reinterpret_cast<char *>(cood), 2 * length * sizeof(double));
+void Centerline::persistence(void * obj_ptr, string out_file){
+	auto typed_ptr = reinterpret_cast<Centerline *>(obj_ptr);
+	ofstream file(out_file.c_str(), ios::binary);
+	file.write(reinterpret_cast<char *>(&typed_ptr->length), sizeof(int));
+	file.write(reinterpret_cast<char *>(typed_ptr->cood), 2 * typed_ptr->length * sizeof(double));
+	file.close();
+}
+
+void Centerline::anti_persistence(void* obj_ptr, std::string in_file) {
+	auto typed_ptr = reinterpret_cast<Centerline *>(obj_ptr);
+	ifstream file(in_file.c_str(), ios::binary);
+	file.read(reinterpret_cast<char *>(&typed_ptr->length), sizeof(int));
+	typed_ptr->size = typed_ptr->length;
+	typed_ptr->adhesion_index = -1;
+	typed_ptr->circle = ROOT_SEARCH::NONE;
+	if (typed_ptr->cood != nullptr)
+		delete[] typed_ptr->cood;
+	typed_ptr->cood = new double[typed_ptr->length][2];
+	file.read(reinterpret_cast<char *>(typed_ptr->cood), 2 * typed_ptr->length * sizeof(double));
 	file.close();
 }

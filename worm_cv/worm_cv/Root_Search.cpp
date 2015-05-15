@@ -226,7 +226,7 @@ Root_Search::Root_Search(Graph & graph):graph(graph), root_num(0), max_length(0)
 		centerline_candidates[i] = nullptr;
 }
 //从骨架图中搜索线虫中心线
-void Root_Search::Search_Backbone(Centerline & last_backbone, Clockwise_Direct clockwise_whole, Clockwise_Direct clockwise_head, 
+void Root_Search::Search_Backbone(Centerline & backbone, Clockwise_Direct clockwise_whole, Clockwise_Direct clockwise_head, 
 	Clockwise_Direct clockwise_tail, double worm_full_width, bool first_pic){
 	Graph_Node next_node;
 	int end_node_num, *end_node, current_index, root_stack_top = 0;
@@ -300,10 +300,10 @@ END_OF_SEARCH:;
 	}
 	delete[] node_in_root;
 	if (!first_pic)
-		Match_Correct_Head(last_backbone, clockwise_whole);
+		Match_Correct_Head(backbone, clockwise_whole);
 	Root_Select(clockwise_head, clockwise_tail);
 	//cout<<"Root selected, length: "<<worm_data.backbone.length<<endl;
-	last_backbone = * centerline_candidates[0];
+	backbone = * centerline_candidates[0];
 	for (int i = 0; i < root_num; i++)
 		delete centerline_candidates[i];
 }

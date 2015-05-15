@@ -217,7 +217,7 @@ void Skeletonize::Connecting_End(){
 void Skeletonize::Convert_To_Graph(const Candidate_Points * candidate_points, Graph * skeleton_graph, string pic_num_str){
 #ifdef __OUTPUT_DEBUG_INFO
 	js_out.open("..\\..\\cache_data\\json\\json"+pic_num_str+".js");
-	js_out<<"worm_json=["<<js_act<<"init"<<js_para<<candidate_points->getPointStr()<<js_end;
+	js_out<<"worm_json=["<<js_act<<"init"<<js_para<<candidate_points->getWholeStr()<<js_end;
 #endif
 	this -> candidate_points = candidate_points;
 	this -> skeleton_graph = skeleton_graph;

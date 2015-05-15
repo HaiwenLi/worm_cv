@@ -40,6 +40,7 @@ public:
 	void Reverse();//中心线反转
 	void Tail_Cut(double full_width);//去除中心线尾部点
 	ROOT_SEARCH::Clockwise_Direct Clockwise_Direct_Calc(int start_index, int tail_index);//计算时针方向
-	static void Centerline::persistence(int *obj_ptr, std::string file_name);
+	static void persistence(void *obj_ptr, std::string out_file);
+	static void anti_persistence(void *obj_ptr, std::string in_file);
 };
 
