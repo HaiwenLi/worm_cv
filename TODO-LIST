@@ -13,8 +13,9 @@ decoupling Skeletonize and Candidate_Points
 		if Query_Points_By_Pointer find a used point, connect it to current and stop
 (done)
 
-add serialization of Centerline
-add deserialization
+add persistence of Centerline
+add anti-persistence
+(done)
 
 decoupling Skeletonize and Graph
 	move Calc_End_Direction_Vec

@@ -25,6 +25,9 @@ void Search_Backbone::persistence(void* obj_ptr, std::string out_file){
 	ofstream file(out_file.c_str(), ios::binary);
 	file.write(reinterpret_cast<char *>(&typed_ptr->worm_full_width), sizeof(double));
 	file.write(reinterpret_cast<char *>(&typed_ptr->worm_area), sizeof(double));
+	file.write(reinterpret_cast<char *>(&typed_ptr->clockwise_whole), sizeof(char));
+	file.write(reinterpret_cast<char *>(&typed_ptr->clockwise_head), sizeof(char));
+	file.write(reinterpret_cast<char *>(&typed_ptr->clockwise_tail), sizeof(char));
 	file.close();
 }
 
@@ -52,11 +55,13 @@ const Centerline *Search_Backbone::Search(const Mat & image){
 	skeleton_graph.Reset();
 	pruned_graph.Reset();
 	candidate_center_points.Reset();
+	cout << "Pic:" << pic_num << endl;
 	candidate_points_detect.Detect_Points(image, candidate_center_points, worm_full_width, worm_area);
 	Next_Stage();
 	skeletonize.Convert_To_Graph(& candidate_center_points, & skeleton_graph, pic_num_str);
 	Next_Stage();
 	skeleton_graph.Edge_Search(pruned_graph);
+	graph_prune.Prune(&skeleton_graph, nullptr);
 	Next_Stage();
 	Root_Search(pruned_graph).Search_Backbone(backbone, clockwise_whole, clockwise_head, clockwise_tail, worm_full_width, first_pic);
 	Next_Stage();

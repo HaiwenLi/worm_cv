@@ -75,9 +75,6 @@ private:
 	int Rotate_To_Next(int base_node, double direction) const;
 public:
 	Graph(){};
-	~Graph(){
-		persistence(reinterpret_cast<int *>(this), CACHE_DIR+"Graph_Last_Exit");
-	};
 	void Reset(){
 		node_num = 0;
 		subgraph_count.Reset();

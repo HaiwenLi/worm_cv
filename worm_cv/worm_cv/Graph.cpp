@@ -61,11 +61,13 @@ void Subgraph_Count::Connect_subgraph(int node_1, int node_2){
 	int subgraph_1 = node_in_which_subgraph[node_1];
 	int subgraph_2 = node_in_which_subgraph[node_2];
 	if (subgraph_1 == subgraph_2) return;
+	int target = max(subgraph_1, subgraph_2);
+	int deleted = min(subgraph_1, subgraph_2);
 	for (int i = 0;i < node_num;++ i)
-		if (node_in_which_subgraph[i] == subgraph_2)
-			node_in_which_subgraph[i] = subgraph_1;
-	subgraph_node_count[subgraph_1] += subgraph_node_count[subgraph_2];
-	subgraph_node_count[subgraph_2] = 0;
+		if (node_in_which_subgraph[i] == deleted)
+			node_in_which_subgraph[i] = target;
+	subgraph_node_count[target] += subgraph_node_count[deleted];
+	subgraph_node_count[deleted] = 0;
 }
 //在所有子图中寻找最大的连通分支
 void Subgraph_Count::Select_Largest_subgraph(bool * Node_Saved){
@@ -132,6 +134,7 @@ void Graph::Edge_Search(Graph & pruned_graph){
 			Delete_Node(i);
 
 	int last_node = Find_Leftmost_Node();
+	cout << "old leftmost:"<<last_node<<endl;
 	int current_node = Rotate_To_Next(last_node, 0);
 	int next_node;
 	int stack[SKELETONIZE::STORAGE_MAX][2], top = 0;

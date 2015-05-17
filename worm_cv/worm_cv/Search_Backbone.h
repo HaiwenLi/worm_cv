@@ -6,6 +6,7 @@
 #include "Root_Search.h"
 #include "Root_Smooth.h"
 #include "Graph.h"
+#include "Graph_Prune.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -20,6 +21,7 @@ private:
 	Candidate_Points candidate_center_points;
 	Graph skeleton_graph;
 	Graph pruned_graph;
+	Graph_Prune graph_prune;
 	Centerline backbone;
 
 	typedef enum { INIT, CANDIDATE, GRAPH, PRUNE, BACKBONE, SMOOTH, FINISH } Stage;
