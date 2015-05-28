@@ -138,6 +138,7 @@ void Candidate_Points_Detect::Denoise_And_Worm_Locate(double area){
 		end_line[i] = 0;
 	}
 }
+
 //public:
 
 void Candidate_Points_Detect::Save2File(string dist_cache_dir, string lap_cache_dir, string pic_num) const{

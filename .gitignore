@@ -1,13 +1,10 @@
 /cache_data/
 /worm_cv/**
-/worm_pic/11*
-/worm_pic/12*
-/worm_pic/13*
-/worm_pic/14*
-/worm_pic/15*
+/worm_pic/**
 /Analyze
 
 !*.cpp
 !*.h
 !*.sln
 !*.suo
+!/worm_pic/10??.tiff

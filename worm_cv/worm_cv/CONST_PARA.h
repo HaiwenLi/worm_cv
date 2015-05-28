@@ -1,31 +1,30 @@
 ﻿#pragma once
 
-//#define __OUTPUT_DEBUG_INFO
-//#define __OUTPUT_STAGE_INFO
+#define __OUTPUT_DEBUG_INFO
+#define __OUTPUT_STAGE_INFO
 
 namespace WORM{
 	const int IMAGE_SIZE = 512;
 	const double INF = 1.0E10;
 	const double PI = 3.14159265359;
-	const int ROI_section[3] = {10, 6, 8};	//标示感兴趣区域在中心线上的比例
 }
 
 namespace BW{
 	const int SIDE_WIDTH = 4;
 	const double MINIMUM_HOLE_PROPORTION = 0.05;	  //
 	extern int BINARY_THRESHOLD;		          //区分线虫与背景的阈值，取所有值小于它的点形成线虫区域
-	const double LAPLACIAN_THRES = -0.35 * 4;     //对距离做laplacian变换后的矩阵中小于此值的点被取为中心线候选点
+	const double LAPLACIAN_THRES = -0.3 * 4;     //对距离做laplacian变换后的矩阵中小于此值的点被取为中心线候选点
 	const double RAP_THRESHOLD = 0.6;		          //宽度大于线虫平均宽度的该倍数时，认为线虫发生了粘连
 	const double RAP_SLOPE = RAP_THRESHOLD / (1 - RAP_THRESHOLD);
 }
 
 namespace SKELETONIZE{
-	const int POINT_NUM_MAX = 600;
+	const int POINT_NUM_MAX = 1000;
 	const int DEGREE_MAX = 5;		//结点最大度数
 	const int NODE_SIZE_MAX = 20;   //一个结点中包含最大的点数
 	const int STORAGE_MAX = 30;
 	const int SUBGRAPH_MAX = 50;
-	const int METRICS_MAX = 8;
+	const int METRICS_MAX = 18;
 	const int END_DIRECT_CALC_POINT_NUM = 3;
 	const double PRUNE_MINIMUM_PROPORTION = 0.5;
 	const double ANGLE_THRESHOLD_NAN = WORM::PI / 3;   //骨架化时若找不到相邻点则在前方该角度内进行搜索
