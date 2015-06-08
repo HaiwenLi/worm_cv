@@ -6,18 +6,17 @@ using namespace cv;
 void Image_Get(Mat & binary_image, int img_index);
 
 int BW::BINARY_THRESHOLD = 50;
-int PIC_START = 1301;
+int PIC_START = 1350;
 
 int main(){
 	Mat image;
 	Search_Backbone search_backbone(PIC_START);
-	auto PIC_NUM = 100;
+	auto PIC_NUM = 50;
 	for (auto pic_num = 0; pic_num < PIC_NUM; ++pic_num){
 		Image_Get(image, pic_num);
 		//image = imread("..\\..\\im1.tiff", 0);
 		search_backbone.Search(image);
 	}
-	cout << setprecision(10) << 2 * atan2(-1, 0) << endl;
 	system("pause");
 	return 0;
 }

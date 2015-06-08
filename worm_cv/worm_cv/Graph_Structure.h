@@ -21,10 +21,10 @@ private:
 public:
 	Graph_Structure(int real_node_num, int structure_node_max);
 	~Graph_Structure();
-	void Check_Structure();
+	void Check_Structure(int & first_node, int & second_node);
 	void Add_Edge(int edge_start, int edge_end, int edge_len, int midway1, int midway2);
 	void Delete_Edge(int edge_start, int edge_end, int midway1, int midway2);
 	const Graph_Structure_Node * Get_Node_List() { return nodes; }
 	int Get_Node_Num() { return node_num; }
-	bool In_Edge_Check(int & last_node, int & current_node);
+	bool Move_To_Other_End(int & last_node, int & current_node);
 };

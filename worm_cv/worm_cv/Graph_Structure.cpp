@@ -16,15 +16,19 @@ Graph_Structure::~Graph_Structure() {
 		delete[] node_hash;
 }
 
-void Graph_Structure::Check_Structure() {
+void Graph_Structure::Check_Structure(int & first_node, int & second_node) {
 	for (auto node_index = 0; node_index < node_num; ++node_index) {
 		auto & structure_node_0 = nodes[node_index];
 		// 度为2的点可删除
 		if (structure_node_0.degree != 2)
-			return;
+			continue;
 		// 连接当前点项链的两条边
 		Graph_Structure_Node * adjacents[2];
 		for (auto i = 0; i < 2; ++i) {
+			if (first_node == structure_node_0.real_index && second_node == structure_node_0.edge_midway_1[i]) {
+				first_node = structure_node_0.edge_end[1 - i];
+				second_node = structure_node_0.edge_midway_2[1 - i];
+			}
 			adjacents[i] = nodes + node_hash[structure_node_0.edge_end[i]];
 			for (auto j = 0; j < adjacents[i]->degree; ++j) {
 				if (adjacents[i]->edge_midway_1[j] == structure_node_0.edge_midway_2[i]) {
@@ -43,10 +47,12 @@ void Graph_Structure::Add_Edge_Oneway(int edge_start, int edge_end, int edge_len
 	if (node_hash[edge_start] < 0)
 		node_hash[edge_start] = node_num++;
 	auto & start_node = nodes[node_hash[edge_start]];
+	start_node.real_index = edge_start;
 	start_node.edge_midway_1[start_node.degree] = midway1;
 	start_node.edge_midway_2[start_node.degree] = midway2;
 	start_node.edge_len[start_node.degree] = edge_len;
 	start_node.edge_end[start_node.degree] = edge_end;
+	++start_node.degree;
 }
 
 void Graph_Structure::Delete_Edge_Oneway(int edge_start, int midway1) {
@@ -75,7 +81,7 @@ void Graph_Structure::Delete_Edge(int edge_start, int edge_end, int midway1, int
 	Delete_Edge_Oneway(edge_end, midway2);
 }
 
-bool Graph_Structure::In_Edge_Check(int& last_node, int& current_node) {
+bool Graph_Structure::Move_To_Other_End(int& last_node, int& current_node) {
 	auto start_hash = node_hash[last_node];
 	if (start_hash < 0)
 		return false;

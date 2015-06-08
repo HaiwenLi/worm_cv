@@ -102,6 +102,7 @@
     <ClInclude Include="Centerline.h" />
     <ClInclude Include="CONST_PARA.h" />
     <ClInclude Include="Graph_Prune.h" />
+    <ClInclude Include="Graph_Structure.h" />
     <ClInclude Include="Root_Search.h" />
     <ClInclude Include="Root_Smooth.h" />
     <ClInclude Include="Search_Backbone.h" />
@@ -115,6 +116,7 @@
     <ClCompile Include="Centerline.cpp" />
     <ClCompile Include="Graph.cpp" />
     <ClCompile Include="Graph_Prune.cpp" />
+    <ClCompile Include="Graph_Structure.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Search_Backbone.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

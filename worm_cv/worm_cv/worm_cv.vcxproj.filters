@@ -48,6 +48,9 @@
     <ClInclude Include="Graph_Prune.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Graph_Structure.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Centerline.cpp">
@@ -78,6 +81,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Graph_Prune.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Graph_Structure.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
