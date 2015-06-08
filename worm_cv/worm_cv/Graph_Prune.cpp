@@ -1,39 +1,6 @@
 #include "stdafx.h"
-#include "Graph_Prune.h"
 
 using namespace std;
-
-Graph_Structure::Graph_Structure(int node_num, int key_node_num) :node_num(node_num), key_node_num(0) {
-	edges = new Graph_Edge[key_node_num][SKELETONIZE::DEGREE_MAX];
-	key_node_degree = new int[key_node_num];
-	hash_index = new int[node_num];
-}
-
-Graph_Structure::~Graph_Structure() {
-	if (edges != nullptr)
-		delete[] edges;
-	if (key_node_degree != nullptr)
-		delete[] key_node_degree;
-	if (hash_index != nullptr)
-		delete[] hash_index;
-}
-
-void Graph_Structure::Check_Structure_Node(int node_index) {
-	auto key_node_index = hash_index[node_index];
-	if (key_node_degree[key_node_index] != 2)
-		return;
-	for (auto i = 0; i < key_node_degree[key_node_index]; ++i)
-		if (edges[key_node_index][i].start_node == edges[key_node_index][i].end_node)
-			return;
-	auto new_edge_start = edges[key_node_index][0].end_node;
-	auto new_edge_second = edges[key_node_index][0].last_second_node;
-	auto new_edge_last_second = edges[key_node_index][1].last_second_node;
-	auto new_edge_end = edges[key_node_index][1].end_node;
-	auto new_edge_length = edges[key_node_index][0].length + edges[key_node_index][1].length;
-	if (new_edge_start == new_edge_end){
-	}
-	key_node_degree[key_node_index] = 0;
-}
 
 void Graph_Prune::Get_Largest_Subgraph() {
 	int *subgraph_mark, subgraph_num = 0;
@@ -85,14 +52,56 @@ void Graph_Prune::Get_Largest_Subgraph() {
 	delete[] node_stack;
 }
 
-int Graph_Prune::Find_Leftmost_Point() {
+void Graph_Prune::Find_Start_Locate(int & first_node, int & second_node) const {
 	Select_Minimum find_leftmost_point(WORM::INF, -1);
+	Select_Minimum second_select(WORM::INF, -1);
 	for (auto i = 0; i < node_num; ++i) {
-		if (node_available[i]) {
+		if (node_available[i]) 
 			find_leftmost_point.Renew(before_prune->Get_Center(i)[0], i);
-		}
 	}
-	return find_leftmost_point.Get_Min_Index();
+	first_node = find_leftmost_point.Get_Min_Index();
+	const auto leftmost_node = before_prune->Get_Node(first_node);
+	int node_to;
+	for (auto i = 0; i < leftmost_node.degree; ++i) {
+		node_to = leftmost_node.adjacent[i];
+		if (!node_available[node_to]) continue;
+		second_select.Renew(atan2(before_prune->Get_Center(node_to)[0] - leftmost_node.center[0],
+			before_prune->Get_Center(node_to)[1] - leftmost_node.center[1]), i);
+	}
+	second_node = leftmost_node.adjacent[second_select.Get_Min_Index()];
+}
+
+void Graph_Prune::Rotate_To_Next(int & last_node, int & current_node) {
+	const auto & current_graph_node = before_prune->Get_Node(current_node);
+	const auto & last_graph_node = before_prune->Get_Node(last_node);
+	auto direction = atan2(last_graph_node.center[0] - current_graph_node.center[0],
+		last_graph_node.center[1] - current_graph_node.center[1]) + SKELETONIZE::ANGLE_ERROR;
+	Select_Minimum adjacent_select(WORM::INF, -1);
+	double angle_temp;
+	int node_to;
+	for (auto i = 0; i < current_graph_node.degree; ++i) {
+		node_to = current_graph_node.adjacent[i];
+		if (!node_available[node_to]) continue;
+		// angle_temp 表示从direction到base_node指向node_to的方向的顺时针转角，范围在0-2pi
+		angle_temp = atan2(before_prune->Get_Center(node_to)[0] - current_graph_node.center[0],
+			before_prune->Get_Center(node_to)[1] - current_graph_node.center[1]) - direction;
+		while (angle_temp < 0)
+			angle_temp += 2 * WORM::PI;
+		adjacent_select.Renew(angle_temp, i);
+	}
+	last_node = current_node;
+	current_node = current_graph_node.adjacent[adjacent_select.Get_Min_Index()];
+}
+
+void Graph_Prune::Graph_Structure_Analyze() {
+	int first_node, second_node;
+	int last_node, current_node;
+	int edge_start, edge_second;
+	Find_Start_Locate(first_node, second_node);
+	last_node = first_node;
+	current_node = second_node;
+	edge_start = first_node;
+	edge_second = second_node;
 }
 
 void Graph_Prune::Prune(const Graph * graph_before_prune, Graph * graph_after_prune) {
@@ -105,6 +114,16 @@ void Graph_Prune::Prune(const Graph * graph_before_prune, Graph * graph_after_pr
 		node_available[i] = true;
 	}
 	Get_Largest_Subgraph();
-	cout << "new leftmost:" << Find_Leftmost_Point() << endl;
+
+	auto structure_node_num = 0;
+	for (auto i = 0; i < node_num; ++i)
+		if (node_available[i] && before_prune->Get_Node(i).degree != 2)
+			++structure_node_num;
+	graph_structure = new Graph_Structure(node_num, structure_node_num + 2);
+
+	int start_node, second_node;
+	Find_Start_Locate(start_node, second_node);
+	cout << "new leftmost:" << start_node << "\t" << second_node << endl;
 	delete[] node_available;
+	delete graph_structure;
 }

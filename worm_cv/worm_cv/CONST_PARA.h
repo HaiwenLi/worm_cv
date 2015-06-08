@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-//#define __OUTPUT_DEBUG_INFO
-//#define __OUTPUT_STAGE_INFO
+#define __OUTPUT_DEBUG_INFO
+#define __OUTPUT_STAGE_INFO
 
 namespace WORM{
 	const int IMAGE_SIZE = 512;

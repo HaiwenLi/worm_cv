@@ -17,6 +17,7 @@ int main(){
 		//image = imread("..\\..\\im1.tiff", 0);
 		search_backbone.Search(image);
 	}
+	cout << setprecision(10) << 2 * atan2(-1, 0) << endl;
 	system("pause");
 	return 0;
 }
