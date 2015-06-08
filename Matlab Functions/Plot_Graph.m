@@ -1,5 +1,6 @@
 function Plot_Graph(num,color)
 
+close all;
 if nargin<2
     color = 'b';
 end
@@ -9,7 +10,7 @@ else
     graph = Read_Graph(strcat('..\cache_data\graph_pruned\',num2str(num)));
 end
 raw_img = imread(strcat('..\worm_pic\',num2str(abs(num)),'.tiff'));
-imagesc(raw_img);
+% imagesc(raw_img);
 hold on;
 draw_skeleton(graph, color);
 axis equal;

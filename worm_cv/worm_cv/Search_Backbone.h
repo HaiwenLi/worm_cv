@@ -3,10 +3,10 @@
 #include "Candidate_Points.h"
 #include "Skeletonize.h"
 #include "Centerline.h"
+#include "Graph_Prune.h"
 #include "Root_Search.h"
 #include "Root_Smooth.h"
 #include "Graph.h"
-#include "Graph_Prune.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>

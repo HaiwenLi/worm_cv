@@ -134,7 +134,7 @@ void Graph::Edge_Search(Graph & pruned_graph){
 			Delete_Node(i);
 
 	int last_node = Find_Leftmost_Node();
-	//cout << "old leftmost:"<<last_node<<endl;
+	cout << "old leftmost:"<<last_node<<endl;
 	int current_node = Rotate_To_Next(last_node, 0);
 	int next_node;
 	int stack[SKELETONIZE::STORAGE_MAX][2], top = 0;

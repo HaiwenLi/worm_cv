@@ -52,6 +52,7 @@ void Search_Backbone::Next_Stage(){
 
 const Centerline *Search_Backbone::Search(const Mat & image){
 	string pic_num_str = num2str(pic_num);
+	Graph graph_temp;
 	skeleton_graph.Reset();
 	pruned_graph.Reset();
 	candidate_center_points.Reset();
@@ -60,8 +61,8 @@ const Centerline *Search_Backbone::Search(const Mat & image){
 	Next_Stage();
 	skeletonize.Convert_To_Graph(& candidate_center_points, & skeleton_graph, pic_num_str);
 	Next_Stage();
+	graph_prune.Prune(&skeleton_graph, &graph_temp);
 	skeleton_graph.Edge_Search(pruned_graph);
-	//graph_prune.Prune(&skeleton_graph, nullptr);
 	Next_Stage();
 	Root_Search(pruned_graph).Search_Backbone(backbone, clockwise_whole, clockwise_head, clockwise_tail, worm_full_width, first_pic);
 	Next_Stage();

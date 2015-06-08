@@ -1,10 +1,12 @@
-/cache_data/
-/worm_cv/**
+/cache_data/**
 /worm_pic/**
 /Analyze
 
-!*.cpp
-!*.h
-!*.sln
-!*.suo
+/worm_cv/**
+!/worm_cv/worm_cv/
+/worm_cv/worm_cv/**
+!/**/*.cpp
+!/**/*.h
+!/**/*.sln
+!/**/*.suo
 !/worm_pic/10??.tiff
