@@ -61,9 +61,9 @@ const Centerline *Search_Backbone::Search(const Mat & image){
 	skeletonize.Convert_To_Graph(& candidate_center_points, & skeleton_graph, pic_num_str);
 	Next_Stage();
 	graph_prune.Prune(&skeleton_graph, backbone, worm_full_width, first_pic);
-	skeleton_graph.Edge_Search(pruned_graph);
+	//skeleton_graph.Edge_Search(pruned_graph);
 	Next_Stage();
-	Root_Search(pruned_graph).Search_Backbone(backbone, clockwise_whole, clockwise_head, clockwise_tail, worm_full_width, first_pic);
+	//Root_Search(pruned_graph).Search_Backbone(backbone, clockwise_whole, clockwise_head, clockwise_tail, worm_full_width, first_pic);
 	Next_Stage();
 	root_smooth.Interpolate_And_Equal_Divide(backbone, ROOT_SMOOTH::PARTITION_NUM);
 	Next_Stage();

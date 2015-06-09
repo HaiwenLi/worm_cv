@@ -2,6 +2,34 @@
 
 using namespace std;
 
+double Graph_Prune::Calc_Clockwise_Angle(const double* p0, const double* p1, const double* p2) {
+	auto angle_clockwise = atan2(p2[0] - p1[0], p2[1] - p1[1]) - atan2(p0[0] - p1[0], p0[1] - p1[1]);
+	if (angle_clockwise < 0)
+		angle_clockwise += 2 * WORM::PI;
+	return angle_clockwise;
+}
+
+bool Graph_Prune::Same_Direction(const std::vector<int> & cline, const Centerline& last_backbone) {
+	auto p0 = before_prune->Get_Center(cline.at(0));
+	auto p2 = before_prune->Get_Center(cline.at(cline.size() - 1));
+	auto last_start = last_backbone.cood[0];
+	auto last_end = last_backbone.cood[last_backbone.length - 1];
+	return (p0[0] - p2[0])*(last_start[0] - last_end[0])
+		+ (p0[1] - p2[1])*(last_start[1] - last_end[1]) > 0;
+}
+
+bool Graph_Prune::Same_Clockwise(const std::vector<int> & cline, const Centerline& last_backbone, int start_2, int end_2) {
+	auto p0 = before_prune->Get_Center(cline.at(0));
+	auto p1 = before_prune->Get_Center(cline.at(cline.size() / 3));
+	auto p2 = before_prune->Get_Center(cline.at(cline.size() * 2/3));
+	auto l0 = last_backbone.cood[start_2];
+	auto l1 = last_backbone.cood[(start_2*2 + end_2) / 3];
+	auto l2 = last_backbone.cood[(start_2 + end_2*2) / 3];
+	auto angle_p = Calc_Clockwise_Angle(p0, p1, p2);
+	auto angle_l = Calc_Clockwise_Angle(l0, l1, l2);
+	return (angle_p < WORM::PI == angle_l < WORM::PI);
+}
+
 void Graph_Prune::Get_Largest_Subgraph() {
 	int *subgraph_mark, subgraph_num = 0;
 	int * node_stack, stack_top = 0;
@@ -154,7 +182,7 @@ void Graph_Prune::Delete_Short_Route() {
 	graph_structure->Check_Structure();
 }
 
-bool Graph_Prune::Shotcut_Prune() {
+bool Graph_Prune::Delete_Shorter_Routes_With_Same_End() {
 	auto changed = false;
 	int delete_index;
 	for (auto i = 0; i < structure_node_num; ++i) {
@@ -175,7 +203,7 @@ bool Graph_Prune::Shotcut_Prune() {
 	return changed;
 }
 
-bool Graph_Prune::Branch_Prune() {
+bool Graph_Prune::Delete_Branch_And_Loopback_Except_For_Two_Longest() {
 	auto changed = false;
 	auto branch_index = new int[structure_node_num*SKELETONIZE::DEGREE_MAX];
 	auto branch_len = new int[structure_node_num*SKELETONIZE::DEGREE_MAX];
@@ -221,7 +249,23 @@ bool Graph_Prune::Branch_Prune() {
 	return changed;
 }
 
-void Graph_Prune::Self_Ring_Prune(int& bifurcate_node_num, const Graph_Structure_Node* special_node[2]) {
+void Graph_Prune::Structure_Node_Statistic(int& special_node_num, int& loopback_count, const Graph_Structure_Node* special_node[2]) {
+	special_node_num = 0;
+	loopback_count = 0;
+	for (auto i = 0; i < structure_node_num; ++i) {
+		if (structure_node_list[i].degree > 0) {
+			if (special_node_num == 0)
+				special_node[0] = structure_node_list + i;
+			else
+				special_node[1] = structure_node_list + i;
+			++special_node_num;
+		}
+		if (structure_node_list[i].degree > 1)
+			++loopback_count;
+	}
+}
+
+void Graph_Prune::Delete_Shorter_Loopback(int& bifurcate_node_num, const Graph_Structure_Node* special_node[2]) {
 	int edge_index[2], edge_len[2];
 	for (auto i = 0; i < 2; ++i)
 		for (auto j = 0; j < special_node[i]->degree - 1; ++j)
@@ -236,27 +280,39 @@ void Graph_Prune::Self_Ring_Prune(int& bifurcate_node_num, const Graph_Structure
 	--bifurcate_node_num;
 }
 
-void Graph_Prune::Structure_Node_Statistic(int& special_node_num, int& self_ring_count, const Graph_Structure_Node* special_node[2]) {
-	special_node_num = 0;
-	self_ring_count = 0;
-	for (auto i = 0; i < structure_node_num; ++i) {
-		if (structure_node_list[i].degree > 0) {
-			if (special_node_num == 0)
-				special_node[0] = structure_node_list + i;
-			else
-				special_node[1] = structure_node_list + i;
-			++special_node_num;
-		}
-		if (structure_node_list[i].degree > 1)
-			++self_ring_count;
+void Graph_Prune::Break_Open_Loopback(Centerline& last_backbone,
+	double worm_full_width, const Graph_Structure_Node* special_node[2], vector<int> & route) {
+
+	const vector<int> * loopback[2];
+	auto loop_count = 0;
+	int last_start, last_end;
+	// initialize, direction calc
+	for (auto j = 0; j < special_node[1]->degree; ++j)
+		if (special_node[1]->edges[j].at(0) == special_node[1]->edges[j].at(special_node[1]->edges[j].size() - 1))
+			loopback[loop_count++] = special_node[1]->edges + j;
+	last_start = 0;
+	last_end = last_backbone.length * loopback[0]->size() / (loopback[0]->size() + special_node[0]->edges[0].size());
+	if (Same_Direction(route, last_backbone)) {
+		last_start = last_backbone.length - 1;
+		last_end = last_start - last_end + 1;
 	}
+
+	route.pop_back();
+	if (!Same_Clockwise(*loopback[0], last_backbone, last_start, last_end))
+		route.insert(route.end(), loopback[0]->begin(), loopback[0]->end());
+	else
+		route.insert(route.end(), loopback[1]->begin(), loopback[1]->end());
+
+	auto bifurcate_cood = before_prune->Get_Center(loopback[0]->at(0));
+	while (Point_Dist_Square(bifurcate_cood, before_prune->Get_Center(route.at(route.size() - 1))) < worm_full_width * worm_full_width / 10)
+		route.pop_back();
 }
 
-std::vector<int> Graph_Prune::Prune(const Graph* graph_before_prune, Centerline& last_backbone, double worm_full_width, bool is_first_pic) {
+void Graph_Prune::Prune(const Graph* graph_before_prune, Centerline& last_backbone, double worm_full_width, bool is_first_pic) {
 	before_prune = graph_before_prune;
 	node_num = before_prune->Get_Node_Num();
 	node_available = new bool[node_num];
-	for (auto i = 0; i < node_num; ++i) 
+	for (auto i = 0; i < node_num; ++i)
 		node_available[i] = true;
 
 	Get_Largest_Subgraph();
@@ -274,26 +330,50 @@ std::vector<int> Graph_Prune::Prune(const Graph* graph_before_prune, Centerline&
 	Graph_Structure_Analyze(first_node, second_node);
 	graph_structure->Check_Structure();
 	Delete_Short_Route();
-	while (Shotcut_Prune() || Branch_Prune());
+	while (Delete_Shorter_Routes_With_Same_End() || Delete_Branch_And_Loopback_Except_For_Two_Longest());
 
 	int special_node_num;
-	int self_ring_count;
+	int loopback_count;
 	const Graph_Structure_Node * special_node[2];
-	Structure_Node_Statistic(special_node_num, self_ring_count, special_node);
+	Structure_Node_Statistic(special_node_num, loopback_count, special_node);
 
 	if (special_node_num != 2)
 		throw new Simple_Exception("Prune Error!!! Special Node Num Must Be 2!!!");
 	//if (is_first_pic && bifurcate_node_num)
-	//	throw new Simple_Exception("First Pic Cannot Have Self Ring!");
+	//	throw new Simple_Exception("First Pic Cannot Have Loopback!");
 
-	if (self_ring_count == 2)
-		Self_Ring_Prune(self_ring_count, special_node);
-	if (self_ring_count > 1 && special_node[0]->degree > 1)
+	if (loopback_count == 2)
+		Delete_Shorter_Loopback(loopback_count, special_node);
+	if (loopback_count == 1 && special_node[0]->degree > 1)
 		swap(special_node[0], special_node[1]);
-	// break
 
+	auto route = special_node[0]->edges[0];
+
+	if (loopback_count > 0)
+		Break_Open_Loopback(last_backbone, worm_full_width, special_node, route);
+
+	if (!is_first_pic) {
+		if (Point_Dist_Square(before_prune->Get_Center(route.at(0)), before_prune->Get_Center(route.at(route.size() - 1)))
+			< 4 * worm_full_width*worm_full_width) {
+			if (!Same_Clockwise(route, last_backbone, 0, last_backbone.length - 1))
+				reverse(route.begin(), route.end());
+		}
+		else if (!Same_Direction(route, last_backbone))
+			reverse(route.begin(), route.end());
+	}
+
+	auto new_cood = new double[route.size()][2];
+	const double *temp_cood;
+	for (auto i = 0; i < route.size(); ++i) {
+		temp_cood = before_prune->Get_Center(route.at(i));
+		new_cood[i][0] = temp_cood[0];
+		new_cood[i][1] = temp_cood[1];
+	}
+	delete[] last_backbone.cood;
+	last_backbone.cood = new_cood;
+	last_backbone.length = route.size();
+	last_backbone.size = route.size();
 
 	delete[] node_available;
 	delete graph_structure;
-	return structure_node_list[0].edges[0];
 }
