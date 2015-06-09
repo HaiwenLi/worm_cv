@@ -21,7 +21,7 @@ private:
 	void Find_Start_Locate(int & first_node, int & second_node) const;
 	void Graph_Structure_Analyze();
 
-	void Delete_Edge(int edge_start, int edge_end, int midway1, int midway2, bool branch=false);
+	void Delete_Edge(const std::vector<int> & edge, bool branch = false);
 	void Delete_Short_Route();
 	bool Shotcut_Prune();
 	bool Branch_Prune();

@@ -259,12 +259,5 @@ void Skeletonize::Convert_To_Graph(const Candidate_Points * candidate_points, Gr
 	js_out << "]";
 	js_out.close();
 #endif
-	double temp1[2] = { 194, 292 };
-	skeleton_graph->Add_Node(temp1, 0);
-	for (auto i = 0; i < 5; ++i) {
-		--temp1[1];
-		skeleton_graph->Add_Node(temp1, skeleton_graph->Get_Node_Num() - 1);
-	}
-	skeleton_graph->Connect_Node(0, skeleton_graph->Get_Node_Num() - 1);
 	delete[] point_mark;
 }

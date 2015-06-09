@@ -122,17 +122,16 @@ void Graph_Prune::Find_Start_Locate(int & first_node, int & second_node) const {
 
 void Graph_Prune::Graph_Structure_Analyze() {
 	int last_node, current_node;
-	int edge_start, edge_second;
-	int edge_num;
 	last_node = first_node;
 	current_node = second_node;
+	vector<int> edge;
 	while (true) {
-		edge_start = last_node;
-		edge_second = current_node;
-		edge_num = 1;
+		edge.clear();
+		edge.push_back(last_node);
+		edge.push_back(current_node);
 		while (Select_Next(last_node, current_node))
-			++edge_num;
-		graph_structure->Add_Edge(edge_start, current_node, edge_num, edge_second, last_node);
+			edge.push_back(current_node);
+		graph_structure->Add_Edge(edge);
 		do {
 			Rotate_To_Next(last_node, current_node);
 			if (last_node == first_node && current_node == second_node)
@@ -141,27 +140,28 @@ void Graph_Prune::Graph_Structure_Analyze() {
 	}
 }
 
-void Graph_Prune::Delete_Edge(int edge_start, int edge_end, int midway1, int midway2, bool branch) {
-	while ((edge_start == first_node && midway1 == second_node) || (edge_end == first_node && midway2 == second_node)) {
+void Graph_Prune::Delete_Edge(const vector<int> & edge, bool branch) {
+	while ((edge.at(0) == first_node && edge.at(1) == second_node) ||
+		(edge.at(edge.size()-1) == first_node && edge.at(edge.size()-2) == second_node)) {
 		graph_structure->Move_To_Other_End(first_node, second_node);
 		Rotate_To_Next(first_node, second_node);
 	}
-	if (!(edge_start == midway2 || branch))
-		node_available[midway2] = false;
-	if (edge_end != midway1)
-		node_available[midway1] = false;
-	graph_structure->Delete_Edge(edge_start, edge_end, midway1, midway2);
+	if (!(edge.at(0) == edge.at(edge.size() - 2) || branch))
+		node_available[edge.at(edge.size() - 2)] = false;
+	if (edge.at(edge.size() - 1) != edge.at(1))
+		node_available[edge.at(1)] = false;
+	graph_structure->Delete_Edge(edge);
 }
 
 void Graph_Prune::Delete_Short_Route() {
 	for (auto i = 0; i < structure_node_num; ++i) {
 		const auto & structure_node = structure_node_list[i];
 		for (auto j = 0; j < structure_node.degree - 1; ++j) {
-			if (structure_node.real_index == structure_node.edge_end[j] && structure_node.edge_len[j] <= 4)
-				Delete_Edge(structure_node.real_index, structure_node.real_index, structure_node.edge_midway_1[j], structure_node.edge_midway_2[j]);
+			if (structure_node.edges[0].at(0) == structure_node.edges[j].at(structure_node.edges[j].size()-1) && structure_node.edges[j].size() <= 4)
+				Delete_Edge(structure_node.edges[j]);
 		}
-		if (structure_node.degree == 1 && structure_node.edge_len[0] <= 2)
-			Delete_Edge(structure_node.real_index, structure_node.edge_end[0], structure_node.edge_midway_1[0], structure_node.edge_midway_2[0], true);
+		if (structure_node.degree == 1 && structure_node.edges[0].size() <= 2)
+			Delete_Edge(structure_node.edges[0], true);
 	}
 	graph_structure->Check_Structure(first_node, second_node);
 }
@@ -172,14 +172,13 @@ bool Graph_Prune::Shotcut_Prune() {
 	for (auto i = 0; i < structure_node_num; ++i) {
 		const auto & structure_node = structure_node_list[i];
 		for (auto j = 0; j < structure_node.degree - 1; ++j) {
-			if (structure_node.edge_end[j] == structure_node.real_index)
+			if (structure_node.edges[j].at(structure_node.edges[j].size()-1) == structure_node.edges[0].at(0))
 				continue;
 			for (auto k = j + 1; k < structure_node.degree; ++k)
-				if (structure_node.edge_end[j] == structure_node.edge_end[k]) {
+				if (structure_node.edges[j].at(structure_node.edges[j].size() - 1) == structure_node.edges[k].at(structure_node.edges[k].size() - 1)) {
 					changed = true;
-					delete_index = structure_node.edge_len[j]>structure_node.edge_len[k] ? k : j;
-					Delete_Edge(structure_node.real_index, structure_node.edge_end[delete_index],
-						structure_node.edge_midway_1[delete_index], structure_node.edge_midway_2[delete_index]);
+					delete_index = structure_node.edges[j].size()>structure_node.edges[k].size() ? k : j;
+					Delete_Edge(structure_node.edges[delete_index]);
 				}
 		}
 	}
@@ -198,14 +197,14 @@ bool Graph_Prune::Branch_Prune() {
 		const auto & structure_node = structure_node_list[i];
 		if (structure_node.degree == 1) {
 			branch_index[branch_num] = i*SKELETONIZE::DEGREE_MAX;
-			branch_len[branch_num] = structure_node.edge_len[0];
+			branch_len[branch_num] = structure_node.edges[0].size();
 			++branch_num;
 		}
 		else for (auto j = 0; j < structure_node.degree; ++j) {
-			if (structure_node.edge_end[j] == structure_node.real_index &&
-				structure_node.edge_midway_1[j] < structure_node.edge_midway_2[j]) {
+			if (structure_node.edges[j].at(structure_node.edges[j].size()-1) == structure_node.edges[0].at(0) &&
+				structure_node.edges[j].at(1) < structure_node.edges[j].at(structure_node.edges[j].size() - 2)) {
 				branch_index[branch_num] = i*SKELETONIZE::DEGREE_MAX + j;
-				branch_len[branch_num] = structure_node.edge_len[j] >> 1;
+				branch_len[branch_num] = structure_node.edges[j].size() >> 1;
 				++branch_num;
 			}
 		}
@@ -225,8 +224,7 @@ bool Graph_Prune::Branch_Prune() {
 			if (!(i == longest_branch.Get_Min_Index() || i == second_longest_branch.Get_Min_Index())) {
 				const auto & structure_node_delete = structure_node_list[branch_index[i] / SKELETONIZE::DEGREE_MAX];
 				auto edge_delete = branch_index[i] % 5;
-				Delete_Edge(structure_node_delete.real_index, structure_node_delete.edge_end[edge_delete],
-					structure_node_delete.edge_midway_1[edge_delete], structure_node_delete.edge_midway_2[edge_delete]);
+				Delete_Edge(structure_node_delete.edges[edge_delete]);
 			}
 		graph_structure->Check_Structure(first_node, second_node);
 	}

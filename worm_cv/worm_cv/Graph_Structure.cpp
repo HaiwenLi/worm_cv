@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include<algorithm>
+
+using namespace std;
 
 Graph_Structure::Graph_Structure(int real_node_num, int structure_node_max) :node_num(0) {
 	nodes = new Graph_Structure_Node[structure_node_max];
@@ -22,37 +25,29 @@ void Graph_Structure::Check_Structure(int & first_node, int & second_node) {
 		// 度为2的点可删除
 		if (structure_node_0.degree != 2)
 			continue;
-		// 连接当前点项链的两条边
+		// 连接当前点相连的两条边
 		Graph_Structure_Node * adjacents[2];
+		int edge_index[2];
 		for (auto i = 0; i < 2; ++i) {
-			if (first_node == structure_node_0.real_index && second_node == structure_node_0.edge_midway_1[i]) {
-				first_node = structure_node_0.edge_end[1 - i];
-				second_node = structure_node_0.edge_midway_2[1 - i];
-			}
-			adjacents[i] = nodes + node_hash[structure_node_0.edge_end[i]];
+			adjacents[i] = nodes + node_hash[structure_node_0.edges[i].at(structure_node_0.edges[i].size() - 1)];
 			for (auto j = 0; j < adjacents[i]->degree; ++j) {
-				if (adjacents[i]->edge_midway_1[j] == structure_node_0.edge_midway_2[i]) {
-					adjacents[i]->edge_midway_2[j] = structure_node_0.edge_midway_2[1 - i];
-					adjacents[i]->edge_len[j] = structure_node_0.edge_len[0] + structure_node_0.edge_len[1];
-					adjacents[i]->edge_end[j] = structure_node_0.edge_end[1 - i];
-				}
+				if (adjacents[i]->edges[j].at(1) == structure_node_0.edges[i].at(structure_node_0.edges[i].size() - 2))
+					edge_index[i] = j;
+			}
+			if (first_node == structure_node_0.edges[i].at(0) && second_node == structure_node_0.edges[i].at(1)) {
+				first_node = structure_node_0.edges[1 - i].at(structure_node_0.edges[1 - i].size() - 1);
+				second_node = structure_node_0.edges[1 - i].at(structure_node_0.edges[1 - i].size() - 2);
 			}
 		}
+		adjacents[0]->edges[edge_index[0]].pop_back();
+		adjacents[0]->edges[edge_index[0]].insert(adjacents[0]->edges[edge_index[0]].end(),
+			structure_node_0.edges[1].begin(), structure_node_0.edges[1].end());
+		adjacents[1]->edges[edge_index[1]].clear();
+		reverse_copy(adjacents[0]->edges[edge_index[0]].begin(), adjacents[0]->edges[edge_index[0]].end(), 
+			back_inserter(adjacents[1]->edges[edge_index[1]]));
 		structure_node_0.degree = 0;
-		node_hash[structure_node_0.real_index] = -1;
+		node_hash[structure_node_0.edges[0].at(0)] = -1;
 	}
-}
-
-void Graph_Structure::Add_Edge_Oneway(int edge_start, int edge_end, int edge_len, int midway1, int midway2) {
-	if (node_hash[edge_start] < 0)
-		node_hash[edge_start] = node_num++;
-	auto & start_node = nodes[node_hash[edge_start]];
-	start_node.real_index = edge_start;
-	start_node.edge_midway_1[start_node.degree] = midway1;
-	start_node.edge_midway_2[start_node.degree] = midway2;
-	start_node.edge_len[start_node.degree] = edge_len;
-	start_node.edge_end[start_node.degree] = edge_end;
-	++start_node.degree;
 }
 
 void Graph_Structure::Delete_Edge_Oneway(int edge_start, int midway1) {
@@ -62,23 +57,31 @@ void Graph_Structure::Delete_Edge_Oneway(int edge_start, int midway1) {
 	auto & deleted_node = nodes[node_hash[edge_start]];
 	--deleted_node.degree;
 	for (auto i = 0; i < deleted_node.degree; ++i) {
-		if (deleted_node.edge_midway_1[i] == midway1) {
-			deleted_node.edge_midway_1[i] = deleted_node.edge_midway_1[deleted_node.degree];
-			deleted_node.edge_midway_2[i] = deleted_node.edge_midway_2[deleted_node.degree];
-			deleted_node.edge_len[i] = deleted_node.edge_len[deleted_node.degree];
-			deleted_node.edge_end[i] = deleted_node.edge_end[deleted_node.degree];
+		if (deleted_node.edges[i].at(1) == midway1) {
+			deleted_node.edges[i] = deleted_node.edges[deleted_node.degree];
 		}
 	}
 }
 
-void Graph_Structure::Add_Edge(int edge_start, int edge_end, int edge_len, int midway1, int midway2) {
-	Add_Edge_Oneway(edge_start, edge_end, edge_len, midway1, midway2);
-	Add_Edge_Oneway(edge_end, edge_start, edge_len, midway2, midway1);
+void Graph_Structure::Add_Edge(const vector<int> & edge) {
+	if (node_hash[edge.at(0)] < 0)
+		node_hash[edge.at(0)] = node_num++;
+	if (node_hash[edge.at(edge.size() - 1)] < 0)
+		node_hash[edge.at(edge.size() - 1)] = node_num++;
+	auto & start_node = nodes[node_hash[edge.at(0)]];
+	auto & end_node = nodes[node_hash[edge.at(edge.size() - 1)]];
+	copy(edge.begin(), edge.end(), inserter(start_node.edges[start_node.degree], start_node.edges[start_node.degree].begin()));
+	++start_node.degree;
+	reverse_copy(edge.begin(), edge.end(), back_inserter(end_node.edges[end_node.degree]));
+	++end_node.degree;
 }
 
-void Graph_Structure::Delete_Edge(int edge_start, int edge_end, int midway1, int midway2) {
-	Delete_Edge_Oneway(edge_start, midway1);
-	Delete_Edge_Oneway(edge_end, midway2);
+void Graph_Structure::Delete_Edge(const vector<int> & edge) {
+	int end_node, end_second;
+	end_node = edge.at(edge.size() - 1);
+	end_second = edge.at(edge.size() - 2);
+	Delete_Edge_Oneway(edge.at(0), edge.at(1));
+	Delete_Edge_Oneway(end_node, end_second);
 }
 
 bool Graph_Structure::Move_To_Other_End(int& last_node, int& current_node) {
@@ -87,9 +90,9 @@ bool Graph_Structure::Move_To_Other_End(int& last_node, int& current_node) {
 		return false;
 	auto & start_node = nodes[start_hash];
 	for (auto i = 0; i < start_node.degree; ++i) {
-		if (start_node.edge_midway_1[i] == current_node) {
-			last_node = start_node.edge_midway_2[i];
-			current_node = start_node.edge_end[i];
+		if (start_node.edges[i].at(1) == current_node) {
+			last_node = start_node.edges[i].at(start_node.edges[i].size()-2);
+			current_node = start_node.edges[i].at(start_node.edges[i].size()-1);
 			return true;
 		}
 	}
