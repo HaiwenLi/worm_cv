@@ -136,7 +136,7 @@ Multi_Points Candidate_Points::Query_Points_By_Pointer(const double * base_point
 			metrics_min.Renew(dist * (1 + ALPHA * tan_angle_diff), i);
 		}
 	}
-	if (metrics_min.Get_Min_Index() > 0)
+	if (metrics_min.Get_Min_Index() >= 0)
 		return Multi_Points(metrics_min.Get_Min_Index());
 	return Multi_Points();
 

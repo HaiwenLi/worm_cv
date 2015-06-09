@@ -9,7 +9,7 @@ if num<0
 else
     graph = Read_Graph(strcat('..\cache_data\graph_pruned\',num2str(num)));
 end
-raw_img = imread(strcat('..\worm_pic\',num2str(abs(num)),'.tiff'));
+% raw_img = imread(strcat('..\worm_pic\',num2str(abs(num)),'.tiff'));
 % imagesc(raw_img);
 hold on;
 draw_skeleton(graph, color);

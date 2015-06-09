@@ -6,7 +6,6 @@
 class Graph_Prune {
 private:
 	const Graph * before_prune;
-	Graph * after_prune;
 	Graph_Structure * graph_structure;
 	bool * node_available;
 	int node_num;
@@ -26,6 +25,6 @@ private:
 	bool Shotcut_Prune();
 	bool Branch_Prune();
 public:
-	void Prune(const Graph * graph_before_prune, Graph * graph_after_prune);
+	std::vector<int> Prune(const Graph * graph_before_prune, Centerline & last_backbone, double worm_full_width, bool is_first_pic);
 };
 
