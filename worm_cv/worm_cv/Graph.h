@@ -26,43 +26,10 @@ struct Graph_Node{
 	int Adjacent_Index_Locate(int adjacent_node) const;
 };
 
-class Subgraph_Count{
-private:
-	int node_num;
-	int subgraph_num;
-	int subgraph_node_count[SKELETONIZE::SUBGRAPH_MAX];
-	int node_in_which_subgraph[SKELETONIZE::POINT_NUM_MAX];
-public:
-	Subgraph_Count():node_num(0), subgraph_num(1){
-		subgraph_node_count[0] = 0;
-	};
-	Subgraph_Count(const Subgraph_Count & subgraph_count);
-	Subgraph_Count & operator=(const Subgraph_Count & subgraph_count);
-	void Reset(){
-		node_num = 0;
-		subgraph_num = 1;
-		subgraph_node_count[0] = 0;
-	}
-	void Add_Node(){
-		++ subgraph_node_count[subgraph_num - 1];
-		node_in_which_subgraph[node_num ++] = subgraph_num - 1;
-	}
-	void Add_Subgraph(){
-		if (subgraph_num ++ >= SKELETONIZE::SUBGRAPH_MAX)
-			throw new Simple_Exception("Subgraph Number Exceed Error!");
-		subgraph_node_count[subgraph_num - 1] = 0;
-	}
-	void Connect_subgraph(int node_1, int node_2);
-	// 若序号为i的结点不在最大连通分支内，则将point_in_which_node[i]标记为-1
-	void Select_Largest_subgraph(bool * Node_Saved);
-};
-
 class Graph{
 private:
 	int node_num;
 	Graph_Node node[SKELETONIZE::POINT_NUM_MAX];
-	bool node_available[SKELETONIZE::POINT_NUM_MAX];
-	Subgraph_Count subgraph_count;
 	
 	mutable int end_node_num;
 	mutable int end_node[SKELETONIZE::STORAGE_MAX];
@@ -70,27 +37,19 @@ private:
 	Graph(const Graph & graph){};
 	Graph & operator=(const Graph & graph){};
 
-	int Find_Leftmost_Node() const;
-	// 返回序号为base_node的结点从direction所表示方向开始，顺时针旋转找到的第一个相邻结点的序号
-	int Rotate_To_Next(int base_node, double direction) const;
 public:
 	Graph(){};
 	void Reset(){
 		node_num = 0;
-		subgraph_count.Reset();
 	}
 	void Connect_Node(int node_1, int node_2){
 		node[node_1].adjacent[node[node_1].degree ++] = node_2;
 		node[node_2].adjacent[node[node_2].degree ++] = node_1;
-		subgraph_count.Connect_subgraph(node_1, node_2);
 	}
 	void Add_Node(const double center[2], int fu_node = -1){
-		if (fu_node == -1 && node_num > 0)
-			subgraph_count.Add_Subgraph();
 		node[node_num].center[0] = center[0];
 		node[node_num].center[1] = center[1];
 		node[node_num].degree = 0;
-		subgraph_count.Add_Node();
 		if (fu_node != -1){
 			node[node_num].adjacent[node[node_num].degree ++] = fu_node;
 			node[fu_node].adjacent[node[fu_node].degree ++] = node_num;
@@ -113,10 +72,7 @@ public:
 	const Graph_Node & Get_Node(int node_index) const{
 		return node[node_index];
 	}
-	void Delete_Node(int node_index);
 	bool Calc_End_Direction_Vec(int end_node, double * derection_vec) const;
-	// 边缘探测函数，运行该函数将去除图的内部结点、内部边，并调整图的存储
-	void Edge_Search(Graph & pruned_graph);
 	static void persistence(void *obj_ptr, std::string out_file);
 	static void anti_persistence(void *obj_ptr, std::string in_file);
 };

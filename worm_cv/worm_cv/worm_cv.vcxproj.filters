@@ -24,9 +24,6 @@
     <ClInclude Include="CONST_PARA.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Root_Search.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Root_Smooth.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -54,9 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Centerline.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Root_Search.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Root_Smooth.cpp">

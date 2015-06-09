@@ -103,7 +103,6 @@
     <ClInclude Include="CONST_PARA.h" />
     <ClInclude Include="Graph_Prune.h" />
     <ClInclude Include="Graph_Structure.h" />
-    <ClInclude Include="Root_Search.h" />
     <ClInclude Include="Root_Smooth.h" />
     <ClInclude Include="Search_Backbone.h" />
     <ClInclude Include="Skeletonize.h" />
@@ -122,7 +121,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Root_Search.cpp" />
     <ClCompile Include="Root_Smooth.cpp" />
     <ClCompile Include="Skeletonize.cpp" />
   </ItemGroup>

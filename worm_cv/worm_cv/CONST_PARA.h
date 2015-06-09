@@ -33,14 +33,6 @@ namespace SKELETONIZE{
 	const double ANGLE_ERROR = 1E-6;
 }
 
-namespace ROOT_SEARCH{
-	typedef enum {NONE, HEAD, TAIL, UNKNOWN} Root_Circle;
-	typedef enum {UNCERTAIN, CLOCKWISE, COUNTER_CLOCKWISE} Clockwise_Direct;
-	const double HEAD_CHOOSE_DIST_MIN = 300;
-	const int ROOT_SCALE_ERROR = 8; //路径选择时允许的路径长度的误差
-	const int MINIMUM_HALF_CIRCLE = (ROOT_SCALE_ERROR + 1) / 2;
-}
-
 namespace ROOT_SMOOTH{
 	const int PARTITION_NUM = 100;   //将线虫中心线等分的份数
 	const int SMOOTH_DETAIL_LEVEL = 1;   //非负，参数越大平滑细节越好，同时越耗时间

@@ -4,7 +4,6 @@
 #include "Skeletonize.h"
 #include "Centerline.h"
 #include "Graph_Prune.h"
-#include "Root_Search.h"
 #include "Root_Smooth.h"
 #include "Graph.h"
 #include <opencv2/core/core.hpp>
@@ -16,22 +15,20 @@ private:
 	//method
 	Candidate_Points_Detect candidate_points_detect;
 	Skeletonize skeletonize;
+	Graph_Prune graph_prune;
 	Root_Smooth root_smooth;
 	//data
 	Candidate_Points candidate_center_points;
 	Graph skeleton_graph;
-	Graph pruned_graph;
-	Graph_Prune graph_prune;
 	Centerline backbone;
 
-	typedef enum { INIT, CANDIDATE, GRAPH, PRUNE, BACKBONE, SMOOTH, FINISH } Stage;
+	typedef enum { INIT, CANDIDATE, GRAPH, GET_BACKBONE, SMOOTH, FINISH } Stage;
 	Stage current_stage;
 
 	int pic_num;
 	bool first_pic;
 	double worm_full_width;
 	double worm_area;
-	ROOT_SEARCH::Clockwise_Direct clockwise_head, clockwise_tail, clockwise_whole;
 
 	void Data_Processing();
 	void Next_Stage();
