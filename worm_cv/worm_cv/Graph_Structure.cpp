@@ -19,7 +19,7 @@ Graph_Structure::~Graph_Structure() {
 		delete[] node_hash;
 }
 
-void Graph_Structure::Check_Structure(int & first_node, int & second_node) {
+void Graph_Structure::Check_Structure() {
 	for (auto node_index = 0; node_index < node_num; ++node_index) {
 		auto & structure_node_0 = nodes[node_index];
 		// 度为2的点可删除
@@ -33,10 +33,6 @@ void Graph_Structure::Check_Structure(int & first_node, int & second_node) {
 			for (auto j = 0; j < adjacents[i]->degree; ++j) {
 				if (adjacents[i]->edges[j].at(1) == structure_node_0.edges[i].at(structure_node_0.edges[i].size() - 2))
 					edge_index[i] = j;
-			}
-			if (first_node == structure_node_0.edges[i].at(0) && second_node == structure_node_0.edges[i].at(1)) {
-				first_node = structure_node_0.edges[1 - i].at(structure_node_0.edges[1 - i].size() - 1);
-				second_node = structure_node_0.edges[1 - i].at(structure_node_0.edges[1 - i].size() - 2);
 			}
 		}
 		adjacents[0]->edges[edge_index[0]].pop_back();

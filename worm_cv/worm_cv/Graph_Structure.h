@@ -17,7 +17,7 @@ private:
 public:
 	Graph_Structure(int real_node_num, int structure_node_max);
 	~Graph_Structure();
-	void Check_Structure(int & first_node, int & second_node);
+	void Check_Structure();
 
 	void Add_Edge(const std::vector<int> & edge);
 	void Delete_Edge(const std::vector<int> & edge);
