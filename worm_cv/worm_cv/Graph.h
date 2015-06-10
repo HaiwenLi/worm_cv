@@ -17,13 +17,15 @@ struct Graph_Node{
 	}
 	Graph_Node(const Graph_Node & node_from, bool copy_adjacent = true);
 	Graph_Node & operator= (const Graph_Node & node);
-	void Find_Available_Adjacents(Graph_Node & next_node, int * node_available) const;
-	int Find_Another_Adjacent(int last_node) const{
+	bool Select_Next(int& last_node, int& current_node) const {
 		if (degree != 2)
-			std::cout << "Warning: This method should only be used by degree-2 node!"<<std::endl;
-		return adjacent[0] == last_node?adjacent[1]:adjacent[0];//一般处理度为2的节点
+			return false;
+		auto next_node = (last_node == adjacent[0]) ? adjacent[1] : adjacent[0];
+		last_node = current_node;
+		current_node = next_node;
+		return true;
 	}
-	int Adjacent_Index_Locate(int adjacent_node) const;
+	int Get_Adjacent_Index(int adjacent_node) const;
 };
 
 class Graph{
@@ -66,11 +68,8 @@ public:
 	bool Is_End_Node(int node_index) const{
 		return (node_index>=0 && node_index<node_num && node[node_index].degree==1);
 	}
-	const double * Get_Center(int node_index) const{
-		return node[node_index].center;
-	}
-	const Graph_Node & Get_Node(int node_index) const{
-		return node[node_index];
+	const Graph_Node * Get_Node(int node_index) const{
+		return node + node_index;
 	}
 	bool Calc_End_Direction_Vec(int end_node, double * derection_vec) const;
 	static void persistence(void *obj_ptr, std::string out_file);

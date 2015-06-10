@@ -153,8 +153,8 @@ bool Skeletonize::Check_Up_Stack() {
 				int zi_node = point_mark[stack.item[stack_top][i]];
 				const auto zi_graph_node = skeleton_graph->Get_Node(zi_node);
 				auto connected = false;
-				for (auto j = 0; j < zi_graph_node.degree; ++j)
-					if (zi_graph_node.adjacent[j] == stack.parent_node[stack_top])
+				for (auto j = 0; j < zi_graph_node->degree; ++j)
+					if (zi_graph_node->adjacent[j] == stack.parent_node[stack_top])
 						connected = true;
 				if (!connected) {
 					skeleton_graph->Connect_Node(zi_node, stack.parent_node[stack_top]);

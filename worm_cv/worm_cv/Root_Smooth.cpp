@@ -85,7 +85,7 @@ void Root_Smooth::Equal_Divide(int partition_num){
 	delete[] length_each;
 }
 //Root_Smooth:public
-void Root_Smooth::Interpolate_And_Equal_Divide(Centerline & centerline_to_smooth, int partition_num){
+void Root_Smooth::Interpolate_And_Equal_Divide(Backbone & centerline_to_smooth, int partition_num){
 	// 初始化并进行插值
 	origin_num = centerline_to_smooth.length;
 	INTERPOLATE_NUM = origin_num * MULTIPLIER - 2;

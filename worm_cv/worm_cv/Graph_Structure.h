@@ -18,7 +18,6 @@ public:
 	Graph_Structure(int real_node_num, int structure_node_max);
 	~Graph_Structure();
 	void Check_Structure();
-
 	void Add_Edge(const std::vector<int> & edge);
 	void Delete_Edge(const std::vector<int> & edge);
 	const Graph_Structure_Node * Get_Node_List() { return nodes; }

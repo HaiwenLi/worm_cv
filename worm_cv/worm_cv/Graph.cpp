@@ -24,18 +24,11 @@ Graph_Node::Graph_Node(const Graph_Node & node_from, bool copy_adjacent){
 		degree = 0;
 }
 
-int Graph_Node::Adjacent_Index_Locate(int adjacent_node) const{
+int Graph_Node::Get_Adjacent_Index(int adjacent_node) const{
 	for (int i = 0;i < degree;++ i)
 		if (adjacent[i] == adjacent_node)
 			return i;
 	return -1;
-}
-
-void Graph_Node::Find_Available_Adjacents(Graph_Node & available_adjacents, int * node_unavailable) const{
-	available_adjacents.degree = 0;
-	for (int i = 0; i < degree; i++)
-		if (node_unavailable[adjacent[i]] < 0)
-			available_adjacents.adjacent[available_adjacents.degree ++] = adjacent[i];
 }
 
 bool Graph::Calc_End_Direction_Vec(int end_node, double * direction_vec) const{
@@ -43,14 +36,9 @@ bool Graph::Calc_End_Direction_Vec(int end_node, double * direction_vec) const{
 		return false;
 	int last_node = end_node;
 	int current_node = node[end_node].adjacent[0];
-	for (int i = 0;i < SKELETONIZE::END_DIRECT_CALC_POINT_NUM;++ i){
-		if (node[current_node].degree != 2)
+	for (int i = 0;i < SKELETONIZE::END_DIRECT_CALC_POINT_NUM;++ i)
+		if (!node[current_node].Select_Next(last_node, current_node))
 			break;
-		//考虑 vec_start_node 未使用的邻接点
-		int next_node = node[current_node].Find_Another_Adjacent(last_node);
-		last_node = current_node;
-		current_node = next_node;
-	}
 	direction_vec[0] = node[end_node].center[0] - node[current_node].center[0];
 	direction_vec[1] = node[end_node].center[1] - node[current_node].center[1];
 	return true;

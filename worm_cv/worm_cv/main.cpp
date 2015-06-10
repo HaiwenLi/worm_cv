@@ -30,8 +30,8 @@ int main(){
 //	Candidate_Points candidate_center_points;
 //	Graph skeleton_graph;
 //	Graph pruned_graph;
-//	Centerline backbone(ROOT_SMOOTH::PARTITION_NUM + 1);
-//	Centerline::anti_persistence(&backbone, "..\\..\\360");
+//	Backbone backbone(ROOT_SMOOTH::PARTITION_NUM + 1);
+//	Backbone::anti_persistence(&backbone, "..\\..\\360");
 //	root_smooth.Interpolate_And_Equal_Divide(backbone, ROOT_SMOOTH::PARTITION_NUM);
 //	backbone.persistence(&backbone, "..\\..\\360out");
 //}

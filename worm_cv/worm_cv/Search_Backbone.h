@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Backbone.h"
 #include "Candidate_Points.h"
 #include "Skeletonize.h"
-#include "Centerline.h"
 #include "Graph_Prune.h"
 #include "Root_Smooth.h"
 #include "Graph.h"
@@ -20,7 +20,7 @@ private:
 	//data
 	Candidate_Points candidate_center_points;
 	Graph skeleton_graph;
-	Centerline backbone;
+	Backbone backbone;
 
 	typedef enum { INIT, CANDIDATE, GRAPH, GET_BACKBONE, SMOOTH, FINISH } Stage;
 	Stage current_stage;
@@ -43,5 +43,5 @@ public:
 	void Set_Area(double worm_area){
 		this->worm_area = worm_area;
 	}
-	const Centerline * Search(const cv::Mat & image);
+	const Backbone * Search(const cv::Mat & image);
 };

@@ -31,7 +31,7 @@ void Search_Backbone::Next_Stage(){
 		"Graph Prune Complete, Backbone Get!", "Smooth Complete!", "All Finished!\n" };
 	static void *persist_obj_ptrs[FINISH] = { &candidate_center_points, &skeleton_graph, &backbone, &backbone, this};
 	static void(*persist_fun_ptrs[FINISH])(void *obj_ptr, string file_dir) = { Candidate_Points::persistence,
-		Graph::persistence, Centerline::persistence, Centerline::persistence, persistence};
+		Graph::persistence, Backbone::persistence, Backbone::persistence, persistence};
 	static string cache_dir_strs[FINISH] = {"candidate_points\\", "graph_unpruned\\", "backbone_unsmoothed\\", "backbone_smoothed\\", "worm_data\\" };
 	auto pic_num_str = num2str(pic_num);
 #ifdef __OUTPUT_STAGE_INFO
@@ -44,7 +44,7 @@ void Search_Backbone::Next_Stage(){
 }
 
 
-const Centerline *Search_Backbone::Search(const Mat & image){
+const Backbone *Search_Backbone::Search(const Mat & image){
 	string pic_num_str = num2str(pic_num);
 	skeleton_graph.Reset();
 	candidate_center_points.Reset();

@@ -2,20 +2,20 @@
 
 #include "CONST_PARA.h"
 
-struct Centerline{
+struct Backbone{
 private:
-	Centerline(){};
+	Backbone(){};
 public:
 	int length;
 	int size;
 	double (* cood)[2];
 
-	explicit Centerline(int root_max_length):length(0), size(root_max_length){
+	explicit Backbone(int root_max_length):length(0), size(root_max_length){
 		cood = new double[size][2];
 	}
-	Centerline(const Centerline & root);
-	Centerline & operator=(const Centerline & root);
-	~Centerline(){
+	Backbone(const Backbone & root);
+	Backbone & operator=(const Backbone & root);
+	~Backbone(){
 		delete[] cood;
 	}
 	static void persistence(void *obj_ptr, std::string out_file);

@@ -99,7 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Candidate_Points.h" />
-    <ClInclude Include="Centerline.h" />
+    <ClInclude Include="Backbone.h" />
     <ClInclude Include="CONST_PARA.h" />
     <ClInclude Include="Graph_Prune.h" />
     <ClInclude Include="Graph_Structure.h" />
@@ -112,7 +112,7 @@
   <ItemGroup>
     <ClCompile Include="Candidate_Points.cpp" />
     <ClCompile Include="Candidate_Points_Detect.cpp" />
-    <ClCompile Include="Centerline.cpp" />
+    <ClCompile Include="Backbone.cpp" />
     <ClCompile Include="Graph.cpp" />
     <ClCompile Include="Graph_Prune.cpp" />
     <ClCompile Include="Graph_Structure.cpp" />

@@ -18,9 +18,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Centerline.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="CONST_PARA.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -48,11 +45,11 @@
     <ClInclude Include="Graph_Structure.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Backbone.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Centerline.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Root_Smooth.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -78,6 +75,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Graph_Structure.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Backbone.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
