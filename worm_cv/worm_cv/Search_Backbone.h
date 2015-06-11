@@ -2,7 +2,7 @@
 
 #include "Backbone.h"
 #include "Candidate_Points.h"
-#include "Skeletonize.h"
+#include "Graph_Builder.h"
 #include "Graph_Prune.h"
 #include "Root_Smooth.h"
 #include "Graph.h"
@@ -14,17 +14,14 @@ class Search_Backbone {
 private:
 	//method
 	Candidate_Points_Detect candidate_points_detect;
-	Skeletonize skeletonize;
+	Graph_Builder skeletonize;
 	Graph_Prune graph_prune;
 	Root_Smooth root_smooth;
 	//data
 	Candidate_Points candidate_center_points;
 	Graph skeleton_graph;
 	Backbone backbone;
-
-	typedef enum { INIT, CANDIDATE, GRAPH, GET_BACKBONE, SMOOTH, FINISH } Stage;
-	Stage current_stage;
-
+	
 	std::string pic_num_str;
 	bool first_pic;
 	double worm_full_width;

@@ -29,6 +29,14 @@ double Included_Angle_Tan(const T1 * vec_1, const T2 * vec_2){
 	return angle[1] <= 1E-5 ? -1 : angle[0]/angle[1];
 }
 
+template<typename T>
+double Calc_Clockwise_Angle(const T* p0, const T* p1, const T* p2) {
+	auto angle_clockwise = atan2(p2[0] - p1[0], p2[1] - p1[1]) - atan2(p0[0] - p1[0], p0[1] - p1[1]);
+	if (angle_clockwise < 0)
+		angle_clockwise += 2 * WORM::PI;
+	return angle_clockwise;
+}
+
 // 有序数组二分查找
 template<class T>
 int Binary_Chop(const T * ordered_array, T element_to_locate, int left, int right){

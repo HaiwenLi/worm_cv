@@ -12,7 +12,6 @@ private:
 	int structure_node_num;
 	const Graph_Structure_Node * structure_node_list;
 
-	inline double Calc_Clockwise_Angle(const double * p0, const double * p1, const double *p2);
 	bool Same_Direction(const std::vector<int> & cline, const Backbone & last_backbone);
 	bool Same_Clockwise(const std::vector<int> & cline,	const Backbone& last_backbone, int start_2, int end_2);
 

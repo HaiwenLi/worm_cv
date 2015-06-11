@@ -61,17 +61,9 @@ public:
 	int Get_Node_Num() const{
 		return node_num;
 	}
-	int * Get_End_Node() const;
-	int Get_End_Num() const{
-		return end_node_num;
-	}
-	bool Is_End_Node(int node_index) const{
-		return (node_index>=0 && node_index<node_num && node[node_index].degree==1);
-	}
 	const Graph_Node * Get_Node(int node_index) const{
 		return node + node_index;
 	}
-	bool Calc_End_Direction_Vec(int end_node, double * derection_vec) const;
 	static void persistence(void *obj_ptr, std::string out_file);
 	static void anti_persistence(void *obj_ptr, std::string in_file);
 };

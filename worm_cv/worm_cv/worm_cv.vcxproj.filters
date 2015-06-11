@@ -30,9 +30,6 @@
     <ClInclude Include="Graph.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Skeletonize.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Candidate_Points.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -48,12 +45,12 @@
     <ClInclude Include="Backbone.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Graph_Builder.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Root_Smooth.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Skeletonize.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Graph.cpp">
@@ -78,6 +75,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Backbone.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Graph_Builder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

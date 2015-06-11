@@ -2,13 +2,6 @@
 
 using namespace std;
 
-double Graph_Prune::Calc_Clockwise_Angle(const double* p0, const double* p1, const double* p2) {
-	auto angle_clockwise = atan2(p2[0] - p1[0], p2[1] - p1[1]) - atan2(p0[0] - p1[0], p0[1] - p1[1]);
-	if (angle_clockwise < 0)
-		angle_clockwise += 2 * WORM::PI;
-	return angle_clockwise;
-}
-
 bool Graph_Prune::Same_Direction(const std::vector<int> & cline, const Backbone& last_backbone) {
 	auto p0 = before_prune->Get_Node(cline.at(0))->center;
 	auto p2 = before_prune->Get_Node(cline.at(cline.size() - 1))->center;

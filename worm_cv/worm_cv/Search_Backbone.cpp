@@ -26,7 +26,9 @@ void Search_Backbone::persistence(void* obj_ptr, std::string out_file){
 }
 
 
-void Search_Backbone::Next_Stage(){
+void Search_Backbone::Next_Stage() {
+	typedef enum { INIT, CANDIDATE, GRAPH, GET_BACKBONE, SMOOTH, FINISH } Stage;
+	static auto current_stage = INIT;
 	static string stage_words[FINISH] = { "Candidates Detect Complete!", "Skeletonize Complete!", 
 		"Graph Prune Complete, Backbone Get!", "Smooth Complete!", "All Finished!\n" };
 	static void *persist_obj_ptrs[FINISH] = { &candidate_center_points, &skeleton_graph, &backbone, &backbone, this};
