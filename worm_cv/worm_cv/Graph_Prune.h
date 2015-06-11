@@ -24,8 +24,8 @@ private:
 	bool Delete_Shorter_Routes_With_Same_End();
 	bool Delete_Branch_And_Loopback_Except_For_Two_Longest();
 	void Structure_Node_Statistic(int& special_node_num, int& loopback_count, const Graph_Structure_Node* special_node[2]);
-	void Delete_Shorter_Loopback(int& bifurcate_node_num, const Graph_Structure_Node* special_node[2]);
-	void Break_Open_Loopback(Backbone& last_backbone, double worm_full_width,
+	void Delete_Smaller_Loopback(int& bifurcate_node_num, const Graph_Structure_Node* special_node[2]);
+	void Connect_Correct_Loopback_To_Route(Backbone& last_backbone, double worm_full_width,
 		const Graph_Structure_Node* special_node[2], std::vector<int> & route);
 public:
 	void Prune(const Graph * graph_before_prune, Backbone & last_backbone, double worm_full_width, bool is_first_pic);

@@ -239,7 +239,7 @@ void Graph_Prune::Structure_Node_Statistic(int& special_node_num, int& loopback_
 	}
 }
 
-void Graph_Prune::Delete_Shorter_Loopback(int& bifurcate_node_num, const Graph_Structure_Node* special_node[2]) {
+void Graph_Prune::Delete_Smaller_Loopback(int& bifurcate_node_num, const Graph_Structure_Node* special_node[2]) {
 	int edge_index[2], edge_len[2];
 	for (auto i = 0; i < 2; ++i)
 		for (auto j = 0; j < special_node[i]->degree - 1; ++j)
@@ -254,7 +254,7 @@ void Graph_Prune::Delete_Shorter_Loopback(int& bifurcate_node_num, const Graph_S
 	--bifurcate_node_num;
 }
 
-void Graph_Prune::Break_Open_Loopback(Backbone& last_backbone,
+void Graph_Prune::Connect_Correct_Loopback_To_Route(Backbone& last_backbone,
 	double worm_full_width, const Graph_Structure_Node* special_node[2], vector<int> & route) {
 
 	const vector<int> * loopback[2];
@@ -291,21 +291,22 @@ void Graph_Prune::Prune(const Graph* graph_before_prune, Backbone& last_backbone
 
 	Get_Largest_Subgraph();
 	// graph structure init
-	structure_node_num = 2;
+	structure_node_num = 0;
 	for (auto i = 0; i < node_num; ++i)
 		if (node_available[i] && before_prune->Get_Node(i)->degree != 2)
 			++structure_node_num;
 	graph_structure = new Graph_Structure(node_num, structure_node_num);
 	structure_node_list = graph_structure->Get_Node_List();
-
+	// analyze structure
 	int first_node;
 	int second_node;
 	Start_Node_Locate(first_node, second_node);
 	Graph_Structure_Analyze(first_node, second_node);
 	graph_structure->Check_Structure();
+	// prune
 	Delete_Short_Route();
 	while (Delete_Shorter_Routes_With_Same_End() || Delete_Branch_And_Loopback_Except_For_Two_Longest());
-
+	// search backbone
 	int special_node_num;
 	int loopback_count;
 	const Graph_Structure_Node * special_node[2];
@@ -317,18 +318,18 @@ void Graph_Prune::Prune(const Graph* graph_before_prune, Backbone& last_backbone
 		throw new Simple_Exception("First Pic Cannot Have Loopback!");
 
 	if (loopback_count == 2)
-		Delete_Shorter_Loopback(loopback_count, special_node);
+		Delete_Smaller_Loopback(loopback_count, special_node);
 	if (loopback_count == 1 && special_node[0]->degree > 1)
 		swap(special_node[0], special_node[1]);
 
 	auto route = special_node[0]->edges[0];
 
 	if (loopback_count > 0)
-		Break_Open_Loopback(last_backbone, worm_full_width, special_node, route);
+		Connect_Correct_Loopback_To_Route(last_backbone, worm_full_width, special_node, route);
 
 	if (!is_first_pic) {
 		if (Point_Dist_Square(before_prune->Get_Node(route.at(0))->center, before_prune->Get_Node(route.at(route.size() - 1))->center)
-			< 4 * worm_full_width*worm_full_width) {
+			< SKELETONIZE::WORM_SPEED * SKELETONIZE::WORM_SPEED * worm_full_width*worm_full_width) {
 			if (!Same_Clockwise(route, last_backbone, 0, last_backbone.length - 1))
 				reverse(route.begin(), route.end());
 		}

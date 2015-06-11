@@ -16,7 +16,6 @@ struct Bifurcate_Stack{
 
 class Graph_Builder{
 private:
-	int point_num;
 	Multi_Points selected_points;
 	int current_node;
 	int * point_mark;

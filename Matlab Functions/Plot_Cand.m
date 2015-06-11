@@ -14,7 +14,7 @@ file_name = strcat('..\cache_data\candidate_points\',data_prefix,num2str(num));
 if exist(file_name,'file') && exist(img_file_name,'file')
     points = Read_Points(file_name,'int');
     raw_img = imread(img_file_name);
-    imagesc(raw_img<80);
+    imagesc(raw_img);
     hold on;
     plot(points(:,2),points(:,1),color,'MarkerSize',4);
     axis equal;

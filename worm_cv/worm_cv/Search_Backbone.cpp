@@ -44,7 +44,6 @@ void Search_Backbone::Next_Stage() {
 	current_stage = Stage((current_stage + 1) % FINISH);
 }
 
-
 const Backbone *Search_Backbone::Search(const Mat & image, string pic_num_str){
 	skeleton_graph.Reset();
 	candidate_center_points.Reset();

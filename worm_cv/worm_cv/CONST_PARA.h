@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-//#define __OUTPUT_DEBUG_INFO
-//#define __OUTPUT_STAGE_INFO
+#define __OUTPUT_DEBUG_INFO
+#define __OUTPUT_STAGE_INFO
 
 namespace WORM{
 	const int IMAGE_SIZE = 512;
@@ -31,6 +31,7 @@ namespace SKELETONIZE{
 	const double ANGLE_THRESHOLD_NAN_TAN = tan(ANGLE_THRESHOLD_NAN);
 	const double ALPHA = 2;   //骨架化时若找不到相邻点进行搜索时的参数，alpha越大表示优先选择角度不变的元素
 	const double ANGLE_ERROR = 1E-6;
+	const int WORM_SPEED = 2; //线虫帧间爬过的长度（以体宽计）
 }
 
 namespace ROOT_SMOOTH{

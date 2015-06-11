@@ -66,7 +66,6 @@ void Graph_Builder::Remove_Used_Points(Multi_Points & item) const {
 
 void Graph_Builder::Search_Further_Points(Multi_Points & points_in_current_node, int current_node_index) {
 	double direction_vec[2];
-	const int *base_point_temp;
 	auto current_node = skeleton_graph->Get_Node(current_node_index);
 	if (current_node->degree != 1)
 		return;
@@ -76,7 +75,7 @@ void Graph_Builder::Search_Further_Points(Multi_Points & points_in_current_node,
 	auto direction_norm_square = direction_vec[0] * direction_vec[0] + direction_vec[1] * direction_vec[1];
 	if (direction_norm_square == 0)
 		return;
-
+	// find base point by projection
 	const double * temp_center;
 	double projection_len;
 	double base_point[2] = { current_node->center[0], current_node->center[1] };
@@ -90,7 +89,7 @@ void Graph_Builder::Search_Further_Points(Multi_Points & points_in_current_node,
 	}
 	base_point[0] += SKELETONIZE::ANGLE_ERROR*direction_vec[0];
 	base_point[1] += SKELETONIZE::ANGLE_ERROR*direction_vec[1];
-
+	// check used point
 	selected_points = candidate_points->Query_Points_By_Pointer(base_point, direction_vec);
 	if (selected_points.size > 0 && point_mark[selected_points[0]] >= 0) {
 		skeleton_graph->Connect_Node(point_mark[selected_points[0]], current_node_index);
@@ -120,7 +119,7 @@ void Graph_Builder::Search_Next_Points() {
 	}
 	// try to find an unused point
 	if (selected_points.size == 0) {
-		for (auto i = 0; i < point_num; ++i)
+		for (auto i = 0; i < candidate_points->Get_Point_Num(); ++i)
 			if (point_mark[i] < 0)
 				selected_points = static_cast<Multi_Points>(i);
 		current_node = -1;
@@ -139,50 +138,34 @@ void Graph_Builder::Search_Next_Points() {
 }
 
 void Graph_Builder::Connecting_End() {
-	auto node_num = skeleton_graph->Get_Node_Num();
-	auto end_node_num = 0;
-	auto *end_nodes = new int[node_num];
-	auto end_node_changed = true;
-	for (auto i = 0; i < node_num; ++i)
-		if (skeleton_graph->Get_Node(i)->degree == 1)
-			end_nodes[end_node_num++] = i;
-
-	Multi_Points last_item;
-	while (end_node_changed) {
-		cout << skeleton_graph->Get_Node_Num()<<endl;
-		end_node_changed = false;
-		for (auto i = 0; i < end_node_num; ++i) {
-			if (skeleton_graph->Get_Node(end_nodes[i])->degree != 1)
-				continue;
-			last_item.size = 0;
-			for (auto j = 0; j < point_num; ++j)
-				if (point_mark[j] == end_nodes[i])
-					last_item.Add(j);
-			Search_Further_Points(last_item, end_nodes[i]);
-			if (selected_points.size > 0) {
-				end_node_changed = true;
-				end_nodes[i] = point_mark[selected_points[0]];
-			}
+	for (auto i = 0; i < skeleton_graph->Get_Node_Num(); ++i) {
+		auto end_node_index = i;
+		while (end_node_index>=0 && skeleton_graph->Get_Node(end_node_index)->degree == 1) {
+			selected_points.size = 0;
+			for (auto j = 0; j < candidate_points->Get_Point_Num(); ++j)
+				if (point_mark[j] == end_node_index)
+					selected_points.Add(j);
+			Search_Further_Points(selected_points, end_node_index);
+			if (selected_points.size > 0)
+				end_node_index = point_mark[selected_points[0]];
+			else end_node_index = -1;
 		}
 	}
-	delete[] end_nodes;
 }
 
 void Graph_Builder::Convert_To_Graph(const Candidate_Points * candidate_points, Graph * skeleton_graph, string pic_num_str) {
 	this->candidate_points = candidate_points;
 	this->skeleton_graph = skeleton_graph;
 	skeleton_graph->Reset();
-	point_num = candidate_points->Get_Point_Num();
+	auto point_num = candidate_points->Get_Point_Num();
 	point_mark = new int[point_num];
 	for (auto i = 0; i < point_num; ++i)
 		point_mark[i] = -1;
 	stack.top = 0;
 	current_node = -1;
 	selected_points = Multi_Points(0);
-
 	while (selected_points.size > 0)
 		Search_Next_Points();
 	Connecting_End();
-
 	delete[] point_mark;
 }
