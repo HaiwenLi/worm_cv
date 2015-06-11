@@ -15,5 +15,5 @@ for num=pic_start:pic_end
     end
 end
 cline = cline(exists==1,:,:);
-roi = [cline(:,31,1),cline(:,31,2)];
+roi = [cline(:,71,1),cline(:,71,2)];
 end

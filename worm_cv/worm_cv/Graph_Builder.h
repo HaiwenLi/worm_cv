@@ -8,15 +8,15 @@ class Subgraph_Count;
 struct Bifurcate_Stack{
 	int top;
 	int parent_node[SKELETONIZE::STORAGE_MAX];
-	Multi_Points item[SKELETONIZE::STORAGE_MAX];
+	std::vector<int> item[SKELETONIZE::STORAGE_MAX];
 
 	Bifurcate_Stack():top(0){};
-	void Push(const Multi_Points & in_stack_points, int parent_index);
+	void Push(const std::vector<int> & in_stack_points, int parent_index);
 };
 
 class Graph_Builder{
 private:
-	Multi_Points selected_points;
+	std::vector<int> selected_points;
 	int current_node;
 	int * point_mark;
 	Bifurcate_Stack stack;
@@ -24,8 +24,8 @@ private:
 	Graph * skeleton_graph;
 	const Candidate_Points * candidate_points;
 
-	void Remove_Used_Points(Multi_Points & item) const;
-	void Search_Further_Points(Multi_Points & item, int current_node);
+	void Get_Unused_Points(const std::vector<int>& nearby_points, std::vector<int> & unused_points) const;
+	void Search_Further_Points(std::vector<int> & item, int current_node);
 	void Check_Connectivity(int parent_node);
 	void Search_Next_Points();
 	void Connecting_End();

@@ -6,12 +6,13 @@ using namespace cv;
 bool Image_Get(Mat & binary_image, int img_index);
 
 int BW::BINARY_THRESHOLD = 80;
-int PIC_START = 4560;
-int PIC_NUM = 225;
+int PIC_START = 3253;
+int PIC_NUM = 1697;
 //const string file_path = "..\\..\\worm_pic\\";
-const string file_path = "..\\..\\..\\Elegan_Images\\Group6\\Centroid\\image_";
+//const string file_path = "..\\..\\..\\Elegan_Images\\Group6\\Centroid\\image_";
 //const string file_path = "..\\..\\..\\Elegan_Images\\Group6\\Roi\\image_";
-const string pic_num_prefix = "g6c_";
+const string file_path = "..\\..\\..\\image1_tiff\\image_";
+const string pic_num_prefix = "i1_";
 
 int main(){
 	Mat image;

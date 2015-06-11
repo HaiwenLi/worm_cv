@@ -22,7 +22,7 @@ namespace SKELETONIZE{
 	const int POINT_NUM_MAX = 1000;
 	const int DEGREE_MAX = 5;		//结点最大度数
 	const int NODE_SIZE_MAX = 20;   //一个结点中包含最大的点数
-	const int STORAGE_MAX = 30;
+	const int STORAGE_MAX = 200;
 	const int SUBGRAPH_MAX = 50;
 	const int METRICS_MAX = 18;
 	const int END_DIRECT_CALC_POINT_NUM = 3;
@@ -75,39 +75,3 @@ public:
 		return message;
 	}
 };
-
-struct Multi_Points{
-	int size;
-	int index[SKELETONIZE::NODE_SIZE_MAX];
-
-	Multi_Points():size(0){};
-	Multi_Points(const Multi_Points & multi_points);
-	explicit Multi_Points(int single_point):size(1){
-		index[0] = single_point;
-	}
-	int & operator[](int i){
-		return index[i];
-	}
-	int operator[](int i) const{
-		return index[i];
-	}
-	Multi_Points & operator=(int single_point){
-		size = 1;
-		index[0] = single_point;
-		return * this;
-	}
-	Multi_Points & operator=(const Multi_Points & multi_points);
-	void Add(int new_index){
-		if (size >= SKELETONIZE::NODE_SIZE_MAX)
-			throw new Simple_Exception("Multi_Points::Point Number Exceed!");
-		index[size ++] = new_index;
-	}
-	void Delete(int locate){
-		if (locate >= size)
-			return;
-		-- size;
-		if (locate < size)
-			index[locate] = index[size];
-	}
-};
-std::ostream & operator<< (std::ostream & out, Multi_Points multi_points);

@@ -1,7 +1,8 @@
-function Plot_Cline(num,color,data_prefix)
+function exist1 = Plot_Cline(num,color,data_prefix)
 
 % img_file_prefix = '..\worm_pic\';
-img_file_prefix = '..\..\Elegan_Images\Group3\Roi\image_';
+% img_file_prefix = '..\..\Elegan_Images\Group3\Roi\image_';
+img_file_prefix = '..\..\image1_tiff\image_';
 if nargin<2
     color = 'w-';
 end
@@ -14,7 +15,8 @@ else
     file_name = strcat('..\cache_data\backbone_unsmoothed\',data_prefix, num2str(-num));
 end
 img_file_name = strcat(img_file_prefix,num2str(abs(num)),'.tiff');
-if exist(file_name,'file') && exist(img_file_name,'file')
+exist1 = exist(file_name,'file') && exist(img_file_name,'file');
+if exist1
     raw_img = imread(img_file_name);
     points = Read_Points(file_name,'double');
     imagesc(raw_img);

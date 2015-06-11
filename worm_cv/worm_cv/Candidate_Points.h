@@ -15,7 +15,7 @@ private:
 	mutable int range_x[2], range_y[2];
 	Candidate_Points(const Candidate_Points &){}
 	Candidate_Points & operator= (const Candidate_Points &) { return *this; }
-	void Range_Calc(const Multi_Points & base_points) const;
+	void Range_Calc(const std::vector<int> & base_points) const;
 
 public:
 	Candidate_Points(){		
@@ -29,18 +29,18 @@ public:
 	int Get_Point_Num() const{
 		return point_num;
 	}
-	const double * Get_Center(const Multi_Points & points) const;
+	const double * Get_Center(const std::vector<int> & points) const;
 	const int * Get_Point(int index) const{
 		return cood[index];
 	}
-	int Branch_Analize(Multi_Points & point_find, int * branch_stamp) const;
-	Multi_Points Query_Points_Nearby(const Multi_Points & base_points) const;
-	Multi_Points Query_Points_By_Pointer(const double * base_point, const double * direct_vec) const;
+	int Branch_Analize(std::vector<int> & point_find, int * branch_stamp) const;
+	void Query_Points_Nearby(const std::vector<int> & base_points, std::vector<int> & nearby_points) const;
+	int Query_Points_By_Pointer(const double * base_point, const double * direct_vec) const;
 	void Add_Line();
 	void Add_Point_To_Line(int y); 
 	static void persistence(void *obj_ptr, std::string out_file);
 	static void anti_persistence(void * obj_ptr, std::string in_file);
-	std::string getPointStr(const Multi_Points & points) const;
+	std::string getPointStr(const std::vector<int> & points) const;
 	std::string getWholeStr() const;
 };
 
