@@ -17,14 +17,7 @@ add persistence of Centerline
 add anti-persistence
 (done)
 
-decoupling Skeletonize and Graph
-	move Calc_End_Direction_Vec
-
-wrap json interface(jsoncpp?)
-
-
-use graph analyze to help find correct root(replace current Prune Method and Root_Search):
-	
+use graph analyze to help find correct root(replace current Prune Method and Root_Search):	
 	new method should generate a new graph:
 		use array to mark the deleted vertex:		
 			find largest subgraph
@@ -32,17 +25,8 @@ use graph analyze to help find correct root(replace current Prune Method and Roo
 			prune (according following)
 			if need deal with clockwise
 			head select
-		rebuild the new graph:
-
-	ii.		if 0 leaf vertex error
-	iii. 	delete leaf branch not long enough
-	iv.	delete other leaf branch, leave two longest
-	v.		use edge search to delete inner vertex
-	vi.		if 0 bifurcate vertex, root find
-			if 1 bifurcate vertex, use clockwise to judge
-				use exist method in Centerline.cpp
-			if 2 bifurcate vertex, delete the shorter path between them, root find
-
+		prune the new graph:
+			algorithm according to my master thesis, use Graph Theory
 	maintain a dynamic bifurcate-vertex-branch list
 		init:
 			find all bifurcate vertex
@@ -56,7 +40,12 @@ use graph analyze to help find correct root(replace current Prune Method and Roo
 			delete the corresponding element if degree==2
 		if bifurcate branch deleted:
 			delete the two corresponding element if degree==2
+(done)
 
+decoupling Skeletonize and Graph
+	move Calc_End_Direction_Vec
+
+wrap json interface(jsoncpp?)
 
 add cross-check into Skeletonize
 	use center-point and hash-list to accelerate	(segment tree?)

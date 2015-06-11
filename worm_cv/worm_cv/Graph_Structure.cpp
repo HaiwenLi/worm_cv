@@ -55,6 +55,7 @@ void Graph_Structure::Delete_Edge_Oneway(int edge_start, int midway1) {
 	for (auto i = 0; i < deleted_node.degree; ++i) {
 		if (deleted_node.edges[i].at(1) == midway1) {
 			deleted_node.edges[i] = deleted_node.edges[deleted_node.degree];
+			break;
 		}
 	}
 }

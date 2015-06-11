@@ -1,14 +1,24 @@
-function Plot_Cand(num,color)
+function Plot_Cand(num,color,data_prefix)
 
+% img_file_prefix = '..\worm_pic\';
+img_file_prefix = '..\..\Elegan_Images\Group5\Centroid\image_';
 if nargin<2
     color = 'r.';
 end
-points = Read_Points(strcat('..\cache_data\candidate_points\',num2str(num)),'int');
-raw_img = imread(strcat('..\worm_pic\',num2str(num),'.tiff'));
-imagesc(raw_img);
-hold on;
-plot(points(:,2),points(:,1),color,'MarkerSize',4);
-axis equal;
-colormap gray;
+if nargin<3
+    data_prefix = '';
+end
+img_file_name = strcat(img_file_prefix,num2str(abs(num)),'.tiff');
+file_name = strcat('..\cache_data\candidate_points\',data_prefix,num2str(num));
+
+if exist(file_name,'file') && exist(img_file_name,'file')
+    points = Read_Points(file_name,'int');
+    raw_img = imread(img_file_name);
+    imagesc(raw_img<80);
+    hold on;
+    plot(points(:,2),points(:,1),color,'MarkerSize',4);
+    axis equal;
+    colormap gray;
+end
 
 end

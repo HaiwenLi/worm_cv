@@ -113,8 +113,6 @@ bool Skeletonize::Search_Further_Points(Multi_Points & last_item, int current_no
 
 bool Skeletonize::Search_Next_Points() {
 	int current_node = skeleton_graph->Get_Node_Num() - 1;
-	double direction_vec[2], base_point[2];
-	const int * base_point_temp;
 	Multi_Points last_item = current_item;
 	current_item = candidate_points->Query_Points_Nearby(current_item);
 	Check_Used_Point(current_item);
@@ -192,12 +190,10 @@ void Skeletonize::Search_Unused_Points() {
 }
 
 void Skeletonize::Connecting_End() {
-	int end_node_num, *end_nodes, base_index;
-	double direction_vec[2], base_point[2];
+	int end_node_num, *end_nodes;
 	bool end_node_changed = true;
 	end_nodes = skeleton_graph->Get_End_Node();
 	end_node_num = skeleton_graph->Get_End_Num();
-	const int * base_point_temp;
 
 	while (end_node_changed) {
 		end_node_changed = false;
@@ -242,9 +238,7 @@ void Skeletonize::Convert_To_Graph(const Candidate_Points * candidate_points, Gr
 	stack.top = 0;
 	Add_Into_Graph(-1);
 
-	int temp;
 	while (current_item.size > 0) {
-		temp = skeleton_graph->Get_Node_Num();
 		if (Search_Next_Points())
 			continue;
 #ifdef __OUTPUT_DEBUG_INFO
@@ -259,7 +253,5 @@ void Skeletonize::Convert_To_Graph(const Candidate_Points * candidate_points, Gr
 	js_out << "]";
 	js_out.close();
 #endif
-	//skeleton_graph->Connect_Node(161, 140);
-	//skeleton_graph->Connect_Node(108, 92);
 	delete[] point_mark;
 }

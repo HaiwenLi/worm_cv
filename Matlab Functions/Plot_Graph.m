@@ -1,14 +1,13 @@
-function Plot_Graph(num,color)
+function Plot_Graph(num,color,data_prefix)
 
 close all;
 if nargin<2
     color = 'b';
 end
-if num<0
-    graph = Read_Graph(strcat('..\cache_data\graph_unpruned\',num2str(-num)));
-else
-    graph = Read_Graph(strcat('..\cache_data\graph_pruned\',num2str(num)));
+if nargin<3
+    data_prefix = '';
 end
+graph = Read_Graph(strcat('..\cache_data\graph_unpruned\',data_prefix,num2str(num)));
 % raw_img = imread(strcat('..\worm_pic\',num2str(abs(num)),'.tiff'));
 % imagesc(raw_img);
 hold on;

@@ -29,7 +29,7 @@ namespace SKELETONIZE{
 	const double PRUNE_MINIMUM_PROPORTION = 0.5;
 	const double ANGLE_THRESHOLD_NAN = WORM::PI / 3;   //骨架化时若找不到相邻点则在前方该角度内进行搜索
 	const double ANGLE_THRESHOLD_NAN_TAN = tan(ANGLE_THRESHOLD_NAN);
-	const double ALPHA = 1;   //骨架化时若找不到相邻点进行搜索时的参数，alpha越大表示优先选择角度不变的元素
+	const double ALPHA = 2;   //骨架化时若找不到相邻点进行搜索时的参数，alpha越大表示优先选择角度不变的元素
 	const double ANGLE_ERROR = 1E-6;
 }
 

@@ -25,7 +25,7 @@ private:
 	typedef enum { INIT, CANDIDATE, GRAPH, GET_BACKBONE, SMOOTH, FINISH } Stage;
 	Stage current_stage;
 
-	int pic_num;
+	std::string pic_num_str;
 	bool first_pic;
 	double worm_full_width;
 	double worm_area;
@@ -34,14 +34,12 @@ private:
 	void Next_Stage();
 	static void persistence(void * obj_ptr, std::string out_file);
 public:
-	explicit Search_Backbone(int start_num = 0) :backbone(ROOT_SMOOTH::PARTITION_NUM + 1), pic_num(0), first_pic(true), worm_full_width(WORM::INF), worm_area(WORM::INF){
-		this->pic_num = start_num;
-	}
+	explicit Search_Backbone() :backbone(ROOT_SMOOTH::PARTITION_NUM + 1), first_pic(true), worm_full_width(WORM::INF), worm_area(WORM::INF){}
 	void Set_Width(double worm_full_width) {
 		this->worm_full_width = worm_full_width;
 	}
 	void Set_Area(double worm_area){
 		this->worm_area = worm_area;
 	}
-	const Backbone * Search(const cv::Mat & image);
+	const Backbone * Search(const cv::Mat & image, std::string pic_num_str = "temp");
 };

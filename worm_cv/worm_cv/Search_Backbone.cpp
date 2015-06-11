@@ -33,7 +33,6 @@ void Search_Backbone::Next_Stage(){
 	static void(*persist_fun_ptrs[FINISH])(void *obj_ptr, string file_dir) = { Candidate_Points::persistence,
 		Graph::persistence, Backbone::persistence, Backbone::persistence, persistence};
 	static string cache_dir_strs[FINISH] = {"candidate_points\\", "graph_unpruned\\", "backbone_unsmoothed\\", "backbone_smoothed\\", "worm_data\\" };
-	auto pic_num_str = num2str(pic_num);
 #ifdef __OUTPUT_STAGE_INFO
 	cout << stage_words[current_stage] << endl;
 #endif
@@ -44,11 +43,11 @@ void Search_Backbone::Next_Stage(){
 }
 
 
-const Backbone *Search_Backbone::Search(const Mat & image){
-	string pic_num_str = num2str(pic_num);
+const Backbone *Search_Backbone::Search(const Mat & image, string pic_num_str){
 	skeleton_graph.Reset();
 	candidate_center_points.Reset();
-	cout << "Pic:" << pic_num << endl;
+	this->pic_num_str = pic_num_str;
+	cout << "Pic:" << pic_num_str << endl;
 	candidate_points_detect.Detect_Points(image, candidate_center_points, worm_full_width, worm_area);
 	Next_Stage();
 	skeletonize.Convert_To_Graph(& candidate_center_points, & skeleton_graph, pic_num_str);
@@ -59,6 +58,5 @@ const Backbone *Search_Backbone::Search(const Mat & image){
 	Next_Stage();
 	Data_Processing();
 	Next_Stage();
-	++ pic_num;
 	return &backbone;
 }
