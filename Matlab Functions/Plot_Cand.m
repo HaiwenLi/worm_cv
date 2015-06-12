@@ -2,7 +2,7 @@ function Plot_Cand(num,color,data_prefix)
 
 % img_file_prefix = '..\worm_pic\';
 % img_file_prefix = '..\..\Elegan_Images\Group3\Centroid\image_';
-img_file_prefix = '..\..\image1_tiff\image_';
+img_file_prefix = '..\..\image2_tiff\image_';
 if nargin<2
     color = 'r.';
 end

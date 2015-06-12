@@ -25,7 +25,6 @@ void Search_Backbone::persistence(void* obj_ptr, std::string out_file){
 	file.close();
 }
 
-
 void Search_Backbone::Next_Stage() {
 	typedef enum { INIT, CANDIDATE, GRAPH, GET_BACKBONE, SMOOTH, FINISH } Stage;
 	static auto current_stage = INIT;
@@ -50,6 +49,7 @@ const Backbone *Search_Backbone::Search(const Mat & image, string pic_num_str){
 	this->pic_num_str = pic_num_str;
 	cout << "Pic:" << pic_num_str << endl;
 	candidate_points_detect.Detect_Points(image, candidate_center_points, worm_full_width, worm_area);
+	candidate_points_detect.Save2File("..\\..\\cache_data\\dist_mat\\","..\\..\\cache_data\\lap_mat\\",pic_num_str);
 	Next_Stage();
 	skeletonize.Convert_To_Graph(& candidate_center_points, & skeleton_graph, pic_num_str);
 	Next_Stage();

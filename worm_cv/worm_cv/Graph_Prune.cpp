@@ -3,8 +3,8 @@
 using namespace std;
 
 bool Graph_Prune::Same_Direction(const std::vector<int> & cline, const Backbone& last_backbone) {
-	auto p0 = before_prune->Get_Node(cline.at(0))->center;
-	auto p2 = before_prune->Get_Node(cline.at(cline.size() - 1))->center;
+	auto p0 = graph->Get_Node(cline.at(0))->center;
+	auto p2 = graph->Get_Node(cline.at(cline.size() - 1))->center;
 	auto last_start = last_backbone.cood[0];
 	auto last_end = last_backbone.cood[last_backbone.length - 1];
 	return (p0[0] - p2[0])*(last_start[0] - last_end[0])
@@ -12,9 +12,9 @@ bool Graph_Prune::Same_Direction(const std::vector<int> & cline, const Backbone&
 }
 
 bool Graph_Prune::Same_Clockwise(const std::vector<int> & cline, const Backbone& last_backbone, int start_2, int end_2) {
-	auto p0 = before_prune->Get_Node(cline.at(0))->center;
-	auto p1 = before_prune->Get_Node(cline.at(cline.size() / 3))->center;
-	auto p2 = before_prune->Get_Node(cline.at(cline.size() * 2/3))->center;
+	auto p0 = graph->Get_Node(cline.at(0))->center;
+	auto p1 = graph->Get_Node(cline.at(cline.size() / 3))->center;
+	auto p2 = graph->Get_Node(cline.at(cline.size() * 2/3))->center;
 	auto l0 = last_backbone.cood[start_2];
 	auto l1 = last_backbone.cood[(start_2*2 + end_2) / 3];
 	auto l2 = last_backbone.cood[(start_2 + end_2*2) / 3];
@@ -24,58 +24,50 @@ bool Graph_Prune::Same_Clockwise(const std::vector<int> & cline, const Backbone&
 }
 
 void Graph_Prune::Get_Largest_Subgraph() {
-	int *subgraph_mark, subgraph_num = 0;
-	int * node_stack, stack_top = 0;
-	//初始化
-	subgraph_mark = new int[node_num];
-	node_stack = new int[node_num];
-	for (auto i = 0; i < node_num; ++i) {
+	auto subgraph_num = 0;
+	auto stack_top = 0;
+	auto subgraph_mark = new int[node_num];
+	auto node_stack = new int[node_num];
+	for (auto i = 0; i < node_num; ++i)
 		subgraph_mark[i] = -1;
-	}
 	//深搜每个分支
 	int current_index;
 	const Graph_Node * current_node;
 	for (auto i = 0; i < node_num; ++i) {
 		if (subgraph_mark[i] < 0) {
+			++subgraph_num;
 			node_stack[stack_top++] = i;
 		}
 		while (stack_top > 0) {
 			current_index = node_stack[--stack_top];
-			subgraph_mark[current_index] = subgraph_num;
-			current_node = before_prune->Get_Node(current_index);
-			for (auto j = 0; j < current_node->degree; ++j) {
-				if (subgraph_mark[current_node->adjacent[j]] < 0) {
+			subgraph_mark[current_index] = subgraph_num-1;
+			current_node = graph->Get_Node(current_index);
+			for (auto j = 0; j < current_node->degree; ++j)
+				if (subgraph_mark[current_node->adjacent[j]] < 0)
 					node_stack[stack_top++] = current_node->adjacent[j];
-				}
-			}
 		}
-		++subgraph_num;
 	}
 	// 计算分支大小
 	auto subgraph_count = new int[subgraph_num];
-	for (auto i = 0; i < subgraph_num; ++i) {
+	for (auto i = 0; i < subgraph_num; ++i)
 		subgraph_count[i] = 0;
-	}
-	for (auto i = 0; i < node_num; ++i) {
+	for (auto i = 0; i < node_num; ++i)
 		++subgraph_count[subgraph_mark[i]];
-	}
 	// 选择最大分支
 	Select_Minimum find_largest_subgraph(-subgraph_count[0], 0);
-	for (auto i = 1; i < subgraph_num; ++i) {
+	for (auto i = 1; i < subgraph_num; ++i)
 		find_largest_subgraph.Renew(-subgraph_count[i], i);
-	}
 	auto largest_subgraph = find_largest_subgraph.Get_Min_Index();
-	for (auto i = 0; i < node_num; ++i) {
+	for (auto i = 0; i < node_num; ++i)
 		node_available[i] = (subgraph_mark[i] == largest_subgraph);
-	}
 	delete[] subgraph_count;
 	delete[] subgraph_mark;
 	delete[] node_stack;
 }
 
 void Graph_Prune::Rotate_To_Next(int & last_node, int & current_node) const {
-	const auto current_graph_node = before_prune->Get_Node(current_node);
-	const auto last_graph_node = before_prune->Get_Node(last_node);
+	const auto current_graph_node = graph->Get_Node(current_node);
+	const auto last_graph_node = graph->Get_Node(last_node);
 	auto direction = atan2(last_graph_node->center[0] - current_graph_node->center[0],
 		last_graph_node->center[1] - current_graph_node->center[1]) + SKELETONIZE::ANGLE_ERROR;
 	Select_Minimum adjacent_select(WORM::INF, -1);
@@ -84,7 +76,7 @@ void Graph_Prune::Rotate_To_Next(int & last_node, int & current_node) const {
 	const double * temp_center;
 	for (auto i = 0; i < current_graph_node->degree; ++i) {
 		node_to = current_graph_node->adjacent[i];
-		temp_center = before_prune->Get_Node(node_to)->center;
+		temp_center = graph->Get_Node(node_to)->center;
 		// angle_temp 表示从direction到base_node指向node_to的方向的顺时针转角，范围在0-2pi
 		angle_temp = atan2(temp_center[0] - current_graph_node->center[0],
 			temp_center[1] - current_graph_node->center[1]) - direction;
@@ -101,22 +93,22 @@ void Graph_Prune::Start_Node_Locate(int & first_node, int & second_node) const {
 	Select_Minimum second_select(WORM::INF, -1);
 	for (auto i = 0; i < node_num; ++i) {
 		if (node_available[i])
-			find_leftmost_point.Renew(before_prune->Get_Node(i)->center[0], i);
+			find_leftmost_point.Renew(graph->Get_Node(i)->center[0], i);
 	}
 	first_node = find_leftmost_point.Get_Min_Index();
-	const auto leftmost_node = before_prune->Get_Node(first_node);
+	const auto leftmost_node = graph->Get_Node(first_node);
 	int node_to;
 	for (auto i = 0; i < leftmost_node->degree; ++i) {
 		node_to = leftmost_node->adjacent[i];
 		if (!node_available[node_to]) continue;
-		auto temp_metric = atan2(before_prune->Get_Node(node_to)->center[0] - leftmost_node->center[0],
-			before_prune->Get_Node(node_to)->center[1] - leftmost_node->center[1]) + WORM::PI / 2;
+		auto temp_metric = atan2(graph->Get_Node(node_to)->center[0] - leftmost_node->center[0],
+			graph->Get_Node(node_to)->center[1] - leftmost_node->center[1]) + WORM::PI / 2;
 		if (temp_metric < 0) temp_metric += WORM::PI * 2;
 		second_select.Renew(temp_metric, i);
 	}
 	second_node = leftmost_node->adjacent[second_select.Get_Min_Index()];
 	auto edge_num = 1;
-	while (before_prune->Get_Node(second_node)->Select_Next(first_node, second_node)) {
+	while (graph->Get_Node(second_node)->Select_Next(first_node, second_node)) {
 		if (++edge_num > node_num)
 			throw new Simple_Exception("Circle Error!");
 	}
@@ -132,7 +124,7 @@ void Graph_Prune::Graph_Structure_Analyze(int & first_node, int & second_node) {
 		edge.clear();
 		edge.push_back(last_node);
 		edge.push_back(current_node);
-		while (before_prune->Get_Node(current_node)->Select_Next(last_node, current_node))
+		while (graph->Get_Node(current_node)->Select_Next(last_node, current_node))
 			edge.push_back(current_node);
 		graph_structure->Add_Edge(edge);
 		do {
@@ -277,14 +269,14 @@ void Graph_Prune::Connect_Correct_Loopback_To_Route(Backbone& last_backbone,
 	else
 		route.insert(route.end(), loopback[1]->begin(), loopback[1]->end());
 
-	auto bifurcate_cood = before_prune->Get_Node(loopback[0]->at(0))->center;
-	while (Point_Dist_Square(bifurcate_cood, before_prune->Get_Node(route.at(route.size() - 1))->center) < worm_full_width * worm_full_width / 10)
+	auto bifurcate_cood = graph->Get_Node(loopback[0]->at(0))->center;
+	while (Point_Dist_Square(bifurcate_cood, graph->Get_Node(route.at(route.size() - 1))->center) < worm_full_width * worm_full_width / 10)
 		route.pop_back();
 }
 
 void Graph_Prune::Prune(const Graph* graph_before_prune, Backbone& last_backbone, double worm_full_width, bool is_first_pic) {
-	before_prune = graph_before_prune;
-	node_num = before_prune->Get_Node_Num();
+	graph = graph_before_prune;
+	node_num = graph->Get_Node_Num();
 	node_available = new bool[node_num];
 	for (auto i = 0; i < node_num; ++i)
 		node_available[i] = true;
@@ -293,7 +285,7 @@ void Graph_Prune::Prune(const Graph* graph_before_prune, Backbone& last_backbone
 	// graph structure init
 	structure_node_num = 0;
 	for (auto i = 0; i < node_num; ++i)
-		if (node_available[i] && before_prune->Get_Node(i)->degree != 2)
+		if (node_available[i] && graph->Get_Node(i)->degree != 2)
 			++structure_node_num;
 	graph_structure = new Graph_Structure(node_num, structure_node_num);
 	structure_node_list = graph_structure->Get_Node_List();
@@ -328,7 +320,7 @@ void Graph_Prune::Prune(const Graph* graph_before_prune, Backbone& last_backbone
 		Connect_Correct_Loopback_To_Route(last_backbone, worm_full_width, special_node, route);
 
 	if (!is_first_pic) {
-		if (Point_Dist_Square(before_prune->Get_Node(route.at(0))->center, before_prune->Get_Node(route.at(route.size() - 1))->center)
+		if (Point_Dist_Square(graph->Get_Node(route.at(0))->center, graph->Get_Node(route.at(route.size() - 1))->center)
 			< SKELETONIZE::WORM_SPEED * SKELETONIZE::WORM_SPEED * worm_full_width*worm_full_width) {
 			if (!Same_Clockwise(route, last_backbone, 0, last_backbone.length - 1))
 				reverse(route.begin(), route.end());
@@ -340,7 +332,7 @@ void Graph_Prune::Prune(const Graph* graph_before_prune, Backbone& last_backbone
 	auto new_cood = new double[route.size()][2];
 	const double *temp_cood;
 	for (auto i = 0; i < route.size(); ++i) {
-		temp_cood = before_prune->Get_Node(route.at(i))->center;
+		temp_cood = graph->Get_Node(route.at(i))->center;
 		new_cood[i][0] = temp_cood[0];
 		new_cood[i][1] = temp_cood[1];
 	}

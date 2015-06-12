@@ -3,9 +3,6 @@
 #include "CONST_PARA.h"
 
 struct Backbone{
-private:
-	Backbone(){};
-public:
 	int length;
 	int size;
 	double (* cood)[2];

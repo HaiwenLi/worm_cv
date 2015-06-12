@@ -6,39 +6,31 @@ using namespace cv;
 bool Image_Get(Mat & binary_image, int img_index);
 
 int BW::BINARY_THRESHOLD = 80;
-int PIC_START = 3253;
-int PIC_NUM = 1697;
+int PIC_START = 1951;
+int PIC_END = 3100;
 //const string file_path = "..\\..\\worm_pic\\";
 //const string file_path = "..\\..\\..\\Elegan_Images\\Group6\\Centroid\\image_";
 //const string file_path = "..\\..\\..\\Elegan_Images\\Group6\\Roi\\image_";
-const string file_path = "..\\..\\..\\image1_tiff\\image_";
-const string pic_num_prefix = "i1_";
+const string file_path = "..\\..\\..\\image2_tiff\\image_";
+const string pic_num_prefix = "i2_";
 
-int main(){
+int main() {
 	Mat image;
 	Search_Backbone search_backbone;
-	for (auto pic_num = 0; pic_num < PIC_NUM; ++pic_num){
+	for (auto pic_num = PIC_START; pic_num < PIC_END; ++pic_num) {
 		if (Image_Get(image, pic_num))
-			search_backbone.Search(image, pic_num_prefix + num2str(pic_num+PIC_START));
+			search_backbone.Search(image, pic_num_prefix + int2str(pic_num));
 	}
 	system("pause");
 	return 0;
 }
 
-//int main() {
-//	Root_Smooth root_smooth;
-//	Backbone backbone(ROOT_SMOOTH::PARTITION_NUM + 1);
-//	Backbone::anti_persistence(&backbone, "..\\..\\360");
-//	root_smooth.Interpolate_And_Equal_Divide(backbone, ROOT_SMOOTH::PARTITION_NUM);
-//	backbone.persistence(&backbone, "..\\..\\360out");
-//}
-
-bool Image_Get(Mat & image, int img_index){
-	string image_filename = file_path + num2str(img_index + PIC_START) + ".tiff";
+bool Image_Get(Mat & image, int img_index) {
+	auto image_filename = file_path + int2str(img_index) + ".tiff";
 	image = imread(image_filename, 0);
-	if (!image.data)
+	if (!image.data || image.rows != WORM::IMAGE_SIZE || image.cols != WORM::IMAGE_SIZE) {
+		cout << "Pic "+int2str(img_index)+" : Not Exist or Wrong Image Size!" << endl;
 		return false;
-	if (image.rows != WORM::IMAGE_SIZE || image.cols != WORM::IMAGE_SIZE)
-		throw new Simple_Exception("Image Size Not Fit!");
+	}
 	return true;
 }

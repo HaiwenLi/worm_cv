@@ -12,7 +12,6 @@ private:
 	Graph_Structure_Node *nodes;
 	int *node_hash;
 	int node_num;
-
 	void Delete_Edge_Oneway(int edge_start, int midway1);
 public:
 	Graph_Structure(int real_node_num, int structure_node_max);

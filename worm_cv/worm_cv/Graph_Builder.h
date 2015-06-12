@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Graph.h"
+#include <stack>
 
 class Graph;
 class Subgraph_Count;
@@ -17,18 +18,16 @@ struct Bifurcate_Stack{
 class Graph_Builder{
 private:
 	std::vector<int> selected_points;
-	int current_node;
 	int * point_mark;
 	Bifurcate_Stack stack;
-
-	Graph * skeleton_graph;
+	Graph * graph;
 	const Candidate_Points * candidate_points;
 
-	void Get_Unused_Points(const std::vector<int>& nearby_points, std::vector<int> & unused_points) const;
-	void Search_Further_Points(std::vector<int> & item, int current_node);
-	void Check_Connectivity(int parent_node);
+	void Search_Unused_Nearby_Points(std::vector<int> & unused_points) const;
+	int Search_Further_Point(std::vector<int> & item, int current_node) const;
+	void Check_Connectivity(std::vector<int>& selected_points, int parent_node);
 	void Search_Next_Points();
-	void Connecting_End();
+	void Connecting_End() const;
 public:
 	void Convert_To_Graph(const Candidate_Points * candidate_center_points, Graph * skeleton_graph, std::string pic_num_str);
 };

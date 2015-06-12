@@ -47,9 +47,7 @@ void Graph_Structure::Check_Structure() {
 }
 
 void Graph_Structure::Delete_Edge_Oneway(int edge_start, int midway1) {
-	if (node_hash[edge_start] < 0) {
-		throw new Simple_Exception("Graph_Structure : Try To Delete Non-Structure-Node");
-	}
+	if (node_hash[edge_start] < 0) return;
 	auto & deleted_node = nodes[node_hash[edge_start]];
 	--deleted_node.degree;
 	for (auto i = 0; i < deleted_node.degree; ++i) {
@@ -74,9 +72,8 @@ void Graph_Structure::Add_Edge(const vector<int> & edge) {
 }
 
 void Graph_Structure::Delete_Edge(const vector<int> & edge) {
-	int end_node, end_second;
-	end_node = edge.at(edge.size() - 1);
-	end_second = edge.at(edge.size() - 2);
+	auto end_node = edge.at(edge.size() - 1);
+	auto end_second = edge.at(edge.size() - 2);
 	Delete_Edge_Oneway(edge.at(0), edge.at(1));
 	Delete_Edge_Oneway(end_node, end_second);
 }

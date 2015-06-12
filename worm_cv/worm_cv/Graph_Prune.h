@@ -5,7 +5,7 @@
 
 class Graph_Prune {
 private:
-	const Graph * before_prune;
+	const Graph * graph;
 	Graph_Structure * graph_structure;
 	bool * node_available;
 	int node_num;
